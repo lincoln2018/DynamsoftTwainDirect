@@ -166,7 +166,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             m_objectLockOnChangedBridge = new object();
 
             // Init our idle session timeout...
-            long lSessionTimeout = 10000; // 300000 = five minutes
+            long lSessionTimeout = 1800000; // 1800000 = 30 minutes
             m_lSessionTimeout = Config.Get("sessionTimeout", lSessionTimeout);
             if (m_lSessionTimeout < 10000)
             {

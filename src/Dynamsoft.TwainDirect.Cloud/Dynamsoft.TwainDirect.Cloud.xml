@@ -1,34 +1,34 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>HazyBits.Twain.Cloud</name>
+        <name>Dynamsoft.TwainDirect.Cloud</name>
     </assembly>
     <members>
-        <member name="T:HazyBits.Twain.Cloud.Application.ApplicationManager">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager">
             <summary>
             Class that handles connection to TWAIN Cloud infrastructure from application side.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Application.ApplicationManager.#ctor(HazyBits.Twain.Cloud.Client.TwainCloudClient)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager.#ctor(Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient)">
             <summary>
-            Initializes a new instance of the <see cref="T:HazyBits.Twain.Cloud.Application.ApplicationManager"/> class.
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager"/> class.
             </summary>
             <param name="client">Initialized TWAIN Cloud client.</param>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Application.ApplicationManager.GetScanners">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager.GetScanners">
             <summary>
             Gets the list of scanners registered in the TWAIN Cloud.
             </summary>
             <returns>List of scanners registered for the current user.</returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Application.ApplicationManager.GetScannerInfo(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager.GetScannerInfo(System.String)">
             <summary>
             Gets the scanner information for specified scanner ID.
             </summary>
             <param name="scannerId">The scanner identifier.</param>
             <returns>Scanner information for specified scanner ID.</returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Application.ApplicationManager.SendCommand(System.String,System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager.SendCommand(System.String,System.String)">
             <summary>
             Sends the command to the specified scanner.
             </summary>
@@ -36,7 +36,7 @@
             <param name="command">The command.</param>
             <returns></returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Application.ApplicationManager.DownloadBlock(System.String,System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Application.ApplicationManager.DownloadBlock(System.String,System.String)">
             <summary>
             Downloads the block.
             </summary>
@@ -44,12 +44,12 @@
             <param name="blockId">The block identifier.</param>
             <returns></returns>
         </member>
-        <member name="E:HazyBits.Twain.Cloud.Client.EventBrokerClient.Received">
+        <member name="E:Dynamsoft.TwainDirect.Cloud.Client.EventBrokerClient.Received">
             <summary>
             Occurs when asynchronious message from TWAIN Cloud is received.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.EventBrokerClient.Send(System.String,System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.EventBrokerClient.Send(System.String,System.String)">
             <summary>
             Sends the specified message to the TWAIN Cloud.
             </summary>
@@ -57,46 +57,46 @@
             <returns></returns>
             <exception cref="T:System.InvalidOperationException">If the session is in disconnected state.</exception>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.EventBrokerClient.OnReceived(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.EventBrokerClient.OnReceived(System.String)">
             <summary>
-            Raises the <see cref="E:HazyBits.Twain.Cloud.Client.EventBrokerClient.Received" /> event.
+            Raises the <see cref="E:Dynamsoft.TwainDirect.Cloud.Client.EventBrokerClient.Received" /> event.
             </summary>
             <param name="message">The received message.</param>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Client.TokensRefreshedEventArgs">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Client.TokensRefreshedEventArgs">
             <summary>
-            Event payload for <see cref="E:HazyBits.Twain.Cloud.Client.TwainCloudClient.TokensRefreshed"/> event.
+            Event payload for <see cref="E:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.TokensRefreshed"/> event.
             </summary>
             <seealso cref="T:System.EventArgs" />
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Client.TokensRefreshedEventArgs.Tokens">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Client.TokensRefreshedEventArgs.Tokens">
             <summary>
             Gets or sets the updated TWAIN Cloud tokens.
             </summary>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Client.TwainCloudClient">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient">
             <summary>
             Low level TWAIN Cloud client that handles connection to the infrastructure.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.TwainCloudClient.#cctor">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.#cctor">
             <summary>
-            Initializes the <see cref="T:HazyBits.Twain.Cloud.Client.TwainCloudClient"/> class.
+            Initializes the <see cref="T:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient"/> class.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.TwainCloudClient.#ctor(System.String,HazyBits.Twain.Cloud.Client.TwainCloudTokens)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.#ctor(System.String,Dynamsoft.TwainDirect.Cloud.Client.TwainCloudTokens)">
             <summary>
-            Initializes a new instance of the <see cref="T:HazyBits.Twain.Cloud.Client.TwainCloudClient"/> class.
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient"/> class.
             </summary>
             <param name="rootUrl">The root TWAIN Cloud API URL.</param>
             <param name="tokens">TWAIN Cloud access tokens.</param>
         </member>
-        <member name="E:HazyBits.Twain.Cloud.Client.TwainCloudClient.TokensRefreshed">
+        <member name="E:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.TokensRefreshed">
             <summary>
             Occurs when TWAIN Cloud access tokens are refreshed.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.TwainCloudClient.Post``1(System.String,System.Object)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.Post``1(System.String,System.Object)">
             <summary>
             Sends POST request to the specified endpoint.
             </summary>
@@ -105,7 +105,7 @@
             <param name="body">Payload for the request to send.</param>
             <returns>Deserialied payload of the response.</returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.TwainCloudClient.Get``1(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.Get``1(System.String)">
             <summary>
             Sends GET request to the specified endpoint.
             </summary>
@@ -113,53 +113,53 @@
             <param name="endpoint">Request endpoint (either absolute or relative to the root URL).</param>
             <returns>Deserialied payload of the response.</returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.TwainCloudClient.OnTokensRefreshed(HazyBits.Twain.Cloud.Client.TokensRefreshedEventArgs)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.OnTokensRefreshed(Dynamsoft.TwainDirect.Cloud.Client.TokensRefreshedEventArgs)">
             <summary>
-            Raises the <see cref="E:HazyBits.Twain.Cloud.Client.TwainCloudClient.TokensRefreshed" /> event.
+            Raises the <see cref="E:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient.TokensRefreshed" /> event.
             </summary>
-            <param name="args">The <see cref="T:HazyBits.Twain.Cloud.Client.TokensRefreshedEventArgs"/> instance containing the event data.</param>
+            <param name="args">The <see cref="T:Dynamsoft.TwainDirect.Cloud.Client.TokensRefreshedEventArgs"/> instance containing the event data.</param>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Client.TwainCloudTokens">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudTokens">
             <summary>
             A set of tokens required to access TWAIN Cloud infrastructure.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Client.TwainCloudTokens.#ctor(System.String,System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudTokens.#ctor(System.String,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:HazyBits.Twain.Cloud.Client.TwainCloudTokens"/> class.
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudTokens"/> class.
             </summary>
             <param name="authorizationToken">The authorization token.</param>
             <param name="refreshToken">The refresh token.</param>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Client.TwainCloudTokens.AuthorizationToken">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudTokens.AuthorizationToken">
             <summary>
             Gets or sets authorization token which should be passed along with each TWAIN Cloud request.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Client.TwainCloudTokens.RefreshToken">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Client.TwainCloudTokens.RefreshToken">
             <summary>
             Gets or sets refresh token that can be used to retrieve new authorization token, when the old one expires.
             </summary>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Device.DeviceSession">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Device.DeviceSession">
             <summary>
             Class that handles connection to TWAIN Cloud infrastructure from device side of things.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Device.DeviceSession.#ctor(HazyBits.Twain.Cloud.Client.TwainCloudClient,System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Device.DeviceSession.#ctor(Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:HazyBits.Twain.Cloud.Device.DeviceSession"/> class.
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.Device.DeviceSession"/> class.
             </summary>
             <param name="client">Initialized TWAIN Cloud client.</param>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Device.DeviceSession.Connect">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Device.DeviceSession.Connect">
             <summary>
             Connects specified scanner to TWAIN Cloud infrastructure.
             </summary>
             <param name="scannerId">The scanner identifier.</param>
             <returns></returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Device.DeviceSession.Send(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Device.DeviceSession.Send(System.String)">
             <summary>
             Sends the specified message to the TWAIN Cloud.
             </summary>
@@ -167,74 +167,74 @@
             <returns></returns>
             <exception cref="T:System.InvalidOperationException">If the session is in disconnected state.</exception>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Device.DeviceSession.UploadBlock(System.Byte[])">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Device.DeviceSession.UploadBlock(System.Byte[])">
             <summary>
             Uploads the specified data to the TWAIN Cloud.
             </summary>
             <param name="data">The data to upload.</param>
             <returns>Unique ID of the object stored in the cloud.</returns>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Device.ScannerStatusResponse">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Device.ScannerStatusResponse">
             <summary>
             Scanner status response payload.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Device.ScannerStatusResponse.Url">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Device.ScannerStatusResponse.Url">
             <summary>
             Gets or sets the URL to use to connect to TWAIN Cloud MQTT broker.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Device.ScannerStatusResponse.RequestTopic">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Device.ScannerStatusResponse.RequestTopic">
             <summary>
             Gets or sets the name of MQTT topic to use for incoming messages.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Device.ScannerStatusResponse.ResponseTopic">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Device.ScannerStatusResponse.ResponseTopic">
             <summary>
             Gets or sets the name of MQTT topic to use for outgoing messages.
             </summary>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Events.MqttClient">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Events.MqttClient">
             <summary>
             TWAIN Cloud MQTT client.
             </summary>
             <seealso cref="T:System.IDisposable" />
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.#cctor">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.#cctor">
             <summary>
-            Initializes the <see cref="T:HazyBits.Twain.Cloud.Events.MqttClient"/> class.
+            Initializes the <see cref="T:Dynamsoft.TwainDirect.Cloud.Events.MqttClient"/> class.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.#ctor(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:HazyBits.Twain.Cloud.Events.MqttClient"/> class.
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.Events.MqttClient"/> class.
             </summary>
             <param name="mqttUrl">The MQTT broker URL.</param>
         </member>
-        <member name="E:HazyBits.Twain.Cloud.Events.MqttClient.MessageReceived">
+        <member name="E:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.MessageReceived">
             <summary>
             Occurs when new message from MQTT broker is received.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.Dispose">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.Connect">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.Connect">
             <summary>
             Connects to MQTT broker.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.Subscribe(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.Subscribe(System.String)">
             <summary>
             Subscribes to the specified topic.
             </summary>
             <param name="topic">The topic.</param>
             <returns></returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.Publish(System.String,System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.Publish(System.String,System.String)">
             <summary>
             Publishes a message to the specified topic.
             </summary>
@@ -242,183 +242,183 @@
             <param name="message">The message.</param>
             <returns></returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Events.MqttClient.OnMessageReceived(HazyBits.Twain.Cloud.Events.MqttMessage)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.OnMessageReceived(Dynamsoft.TwainDirect.Cloud.Events.MqttMessage)">
             <summary>
-            Raises the <see cref="E:HazyBits.Twain.Cloud.Events.MqttClient.MessageReceived" /> event.
+            Raises the <see cref="E:Dynamsoft.TwainDirect.Cloud.Events.MqttClient.MessageReceived" /> event.
             </summary>
             <param name="message">Message payload.</param>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Events.MqttMessage">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Events.MqttMessage">
             <summary>
             MQTT message properties.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Events.MqttMessage.Topic">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Events.MqttMessage.Topic">
             <summary>
             Gets or sets the MQTT topic for the message.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Events.MqttMessage.Message">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Events.MqttMessage.Message">
             <summary>
             Gets or sets the message text.
             </summary>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Registration.PollResponse">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Registration.PollResponse">
             <summary>
             Poll response payload.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.PollResponse.Success">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.PollResponse.Success">
             <summary>
             Gets or sets a value indicating whether registration was successfully completed by user.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.PollResponse.Message">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.PollResponse.Message">
             <summary>
             Gets or sets the error message if registration is not successfull.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.PollResponse.AuthorizationToken">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.PollResponse.AuthorizationToken">
             <summary>
             Gets or sets device authorization token in case of successfull registration.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.PollResponse.RefreshToken">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.PollResponse.RefreshToken">
             <summary>
             Gets or sets device refresh token in case of successfull registration.
             </summary>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Registration.RegistrationManager">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationManager">
             <summary>
             Class that handles device registration with TWAIN Cloud infrastructure.
             </summary>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Registration.RegistrationManager.#ctor(HazyBits.Twain.Cloud.Client.TwainCloudClient)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationManager.#ctor(Dynamsoft.TwainDirect.Cloud.Client.TwainCloudClient)">
             <summary>
-            Initializes a new instance of the <see cref="T:HazyBits.Twain.Cloud.Registration.RegistrationManager"/> class.
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationManager"/> class.
             </summary>
             <param name="client">Initialized TWAIN Cloud client.</param>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Registration.RegistrationManager.Register(HazyBits.Twain.Cloud.Registration.ScannerInformation)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationManager.Register(Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation)">
             <summary>
             Initiates registration sequence for specified device.
             </summary>
             <param name="scanner">The device information to register.</param>
             <returns>Registration response.</returns>
         </member>
-        <member name="M:HazyBits.Twain.Cloud.Registration.RegistrationManager.Poll(System.String)">
+        <member name="M:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationManager.Poll(System.String)">
             <summary>
             Polls TWAIN Cloud infrastucture for registration completion.
             </summary>
             <param name="pollUrl">The poll URL.</param>
             <returns>Polling reponse.</returns>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Registration.RegistrationResponse">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationResponse">
             <summary>
             Registration reponse payload.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.RegistrationResponse.ScannerId">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationResponse.ScannerId">
             <summary>
             Gets or sets unique scanner identifier, assigned to the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.RegistrationResponse.RegistrationToken">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationResponse.RegistrationToken">
             <summary>
             Gets or sets the registration token that should be used to complete the registration.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.RegistrationResponse.PollingUrl">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationResponse.PollingUrl">
             <summary>
             Gets or sets the polling URL to retrieve registration status.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.RegistrationResponse.InviteUrl">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.RegistrationResponse.InviteUrl">
             <summary>
             Gets or sets the invite URL to be used to complete registration process.
             </summary>
         </member>
-        <member name="T:HazyBits.Twain.Cloud.Registration.ScannerInformation">
+        <member name="T:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation">
             <summary>
             Scanner information fields.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Id">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Id">
             <summary>
             Gets or sets the identifier of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Name">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Name">
             <summary>
             Gets or sets the name of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Description">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Description">
             <summary>
             Gets or sets the description of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Type">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Type">
             <summary>
             Gets or sets the type of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Version">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Version">
             <summary>
             Gets or sets the version of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Manufacturer">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Manufacturer">
             <summary>
             Gets or sets the manufacturer of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Model">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Model">
             <summary>
             Gets or sets the model of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.Firmware">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.Firmware">
             <summary>
             Gets or sets the firmware of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.device_state">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.device_state">
             <summary>
             Gets or sets the state of the device.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.connection_state">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.connection_state">
             <summary>
             Gets or sets the state of the connection.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.serial_number">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.serial_number">
             <summary>
             Gets or sets the serial number.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.setup_url">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.setup_url">
             <summary>
             Gets or sets the setup URL.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.support_url">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.support_url">
             <summary>
             Gets or sets the support URL.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.update_url">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.update_url">
             <summary>
             Gets or sets the update URL.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.semantic_state">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.semantic_state">
             <summary>
             Gets or sets the state of the semantic.
             </summary>
         </member>
-        <member name="P:HazyBits.Twain.Cloud.Registration.ScannerInformation.uptime">
+        <member name="P:Dynamsoft.TwainDirect.Cloud.Registration.ScannerInformation.uptime">
             <summary>
             Gets or sets the uptime.
             </summary>

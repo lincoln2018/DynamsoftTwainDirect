@@ -69,6 +69,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MQTTnet, Version=2.7.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MQTTnet.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -144,10 +148,6 @@
     <None Include="TwainDirect.Scanner_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MQTTnet\MQTTnet.csproj">
-      <Project>{3587e506-55a2-4eb3-99c7-dc01e42d25d2}</Project>
-      <Name>MQTTnet</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Dynamsoft.TwainDirect.Cloud.RegistForms\Dynamsoft.TwainDirect.Cloud.RegistForms.csproj">
       <Project>{2e30a83d-ce4a-45d3-8c51-a0bcbd24a0e7}</Project>
       <Name>Dynamsoft.TwainDirect.Cloud.RegistForms</Name>

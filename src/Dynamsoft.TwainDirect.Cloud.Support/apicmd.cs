@@ -799,12 +799,10 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// Handle the response to our request
         /// </summary>
         /// <param name="a_iasyncresult"></param>
-        private static void ResponseCallBackLaunchpad(IAsyncResult a_iasyncresult)
+        private static async void ResponseCallBackLaunchpad(IAsyncResult a_iasyncresult)
         {
             ApiCmd apicmd = (ApiCmd)a_iasyncresult.AsyncState;
-
-            var task = Task.Run(async () => { await apicmd.ResponseCallBack(a_iasyncresult); });
-            task.Wait();
+            await apicmd.ResponseCallBack(a_iasyncresult);
         }
 
         /// <summary>
@@ -889,11 +887,17 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             // Get the response, deal with communication problems
             try
             {
+                var request = this.m_httprequestdata.httpwebrequest;
+
                 if (m_dnssddeviceinfo.IsCloud())
                 {
+                    WebResponse response = request.EndGetResponse(a_iasyncresult);
+
                     var cloudResponse = await WaitCloudResponse();
 
                     Debug.WriteLine($"Wait completed, starting processing");
+
+
                     var headers = new NameValueCollection();
                     foreach(var pair in cloudResponse.Headers)
                         headers.Add(pair.Key, pair.Value);
@@ -911,7 +915,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
                 }
                 else
                 {
-                    m_httpresponsedata.httpwebresponse = new HttpWebResponseBase((HttpWebResponse)m_httprequestdata.httpwebrequest.EndGetResponse(a_iasyncresult));
+                    m_httpresponsedata.httpwebresponse = new HttpWebResponseBase((HttpWebResponse)request.EndGetResponse(a_iasyncresult));
                 }
             }
             catch (WebException webexception)
@@ -1912,6 +1916,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
 
             // Timeout...
             m_httprequestdata.httpwebrequest.Timeout = a_iTimeout;
+            m_httprequestdata.httpwebrequest.ReadWriteTimeout = a_iTimeout;
 
             // Data we're sending...
             if (abData != null)
@@ -1978,12 +1983,21 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
 
                 // Start the asynchronous request.
                 m_httprequestdata.autoreseteventHttpWebRequest = new AutoResetEvent(false);
-                IAsyncResult iasyncresult = (IAsyncResult)m_httprequestdata.httpwebrequest.BeginGetResponse(new AsyncCallback(ResponseCallBackLaunchpad), this);
+
+                IAsyncResult iasyncresult;
+                if (m_dnssddeviceinfo.IsCloud())
+                {
+                    iasyncresult = (IAsyncResult)m_httprequestdata.httpwebrequest.BeginGetResponse(ResponseCallBackLaunchpad, this);
+                }
+                else
+                {
+                    iasyncresult = (IAsyncResult)m_httprequestdata.httpwebrequest.BeginGetResponse(ResponseCallBackLaunchpad, this);
+                }
 
                 // this line implements the timeout, if there is a timeout, the callback fires and the request becomes aborted
                 m_waithandle = iasyncresult.AsyncWaitHandle;
                 m_registeredwaithandle = ThreadPool.RegisterWaitForSingleObject(iasyncresult.AsyncWaitHandle, new WaitOrTimerCallback(TimeoutCallback), this, a_iTimeout, true);
-
+                
                 // KEYWORD:RESPONSE
                 // The response came in the allowed time. The work processing will happen in the 
                 // callback function.  The if-statement is the best place to break if all you
