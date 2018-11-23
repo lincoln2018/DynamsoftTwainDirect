@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Dynamsoft.TwainDirect.Cloud.RegistForms</name>
+    </assembly>
+    <members>
+        <member name="T:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm">
+            <summary>
+            Simple form that simplifies Facebook Authentication process.
+            </summary>
+            <seealso cref="T:System.Windows.Forms.Form" />
+        </member>
+        <member name="M:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm"/> class.
+            </summary>
+            <param name="loginUrl">The login URL.</param>
+        </member>
+        <member name="E:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm.Authorized">
+            <summary>
+            Occurs when TWAIN Cloud successfully authorized the user and issued access tokens.
+            </summary>
+        </member>
+        <member name="F:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Dynamsoft.TwainDirect.Cloud.RegistForms.FacebookLoginForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Dynamsoft.TwainDirect.Cloud.RegistForms.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Dynamsoft.TwainDirect.Cloud.RegistForms.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Dynamsoft.TwainDirect.Cloud.RegistForms.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Dynamsoft.TwainDirect.Cloud.RegistForms.Properties.Resources.Error">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:Dynamsoft.TwainDirect.Cloud.RegistForms.Properties.Resources.Information">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:Dynamsoft.TwainDirect.Cloud.RegistForms.Properties.Resources.Progress">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="F:Dynamsoft.TwainDirect.Cloud.RegistForms.RegistrationForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Dynamsoft.TwainDirect.Cloud.RegistForms.RegistrationForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Dynamsoft.TwainDirect.Cloud.RegistForms.RegistrationForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+    </members>
+</doc>
