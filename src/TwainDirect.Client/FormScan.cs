@@ -43,6 +43,8 @@ using System.Resources;
 using System.Threading;
 using System.Windows.Forms;
 using Dynamsoft.TwainDirect.Cloud.Client;
+using Dynamsoft.TwainDirect.Cloud.Support.Dnssd;
+
 using Dynamsoft.TwainDirect.Cloud.RegistForms;
 using Dynamsoft.TwainDirect.Cloud.Support;
 
@@ -64,8 +66,6 @@ namespace TwainDirect.Client
         /// <param name="a_fScale">scale factor for our form</param>
         public FormScan()
         {
-            bool blServiceIsAvailable;
-
             // Set up a data folder, in this instance we're assuming the project
             // name matches the binary, so we can quickly locate it...
             string szExecutableName = Config.Get("executableName", "");
@@ -154,19 +154,6 @@ namespace TwainDirect.Client
             // Clear the picture boxes...
             LoadImage(ref m_pictureboxImage1, ref m_graphics1, ref m_bitmapGraphic1, null, "");
             LoadImage(ref m_pictureboxImage2, ref m_graphics2, ref m_bitmapGraphic2, null, "");
-
-            // Create the mdns monitor, and start it...
-            m_dnssd = new Dnssd(Dnssd.Reason.Monitor, out blServiceIsAvailable);
-            if (blServiceIsAvailable)
-            {
-                m_dnssd.MonitorStart(null, IntPtr.Zero);
-            }
-            else
-            {
-                Log.Error("Bonjour is not available, has it been installed?");
-                m_dnssd.Dispose();
-                m_dnssd = null;
-            }
 
             // Get our TWAIN Local interface.
             m_twainlocalscannerclient = new TwainLocalScannerClient(EventCallback, this, false);
@@ -1223,14 +1210,6 @@ namespace TwainDirect.Client
             // Use our close function...
             m_buttonClose_Click(sender, e);
 
-            // Kill the monitor, if we have one...
-            if (m_dnssd != null)
-            {
-                m_dnssd.MonitorStop();
-                m_dnssd.Dispose();
-                m_dnssd = null;
-            }
-
             // More cleanup...
             if (m_twainlocalscannerclient != null)
             {
@@ -1591,8 +1570,6 @@ namespace TwainDirect.Client
         /// <param name="e"></param>
         private void m_buttonOpen_Click(object sender, EventArgs e)
         {
-            bool blUpdated;
-            bool blNoMonitor;
             bool blSuccess;
             long lJsonErrorIndex;
             string szSelected = null;
@@ -1601,7 +1578,7 @@ namespace TwainDirect.Client
             string szIpv4;
             string szIpv6;
             JsonLookup jsonlookupSelected;
-            Dnssd.DnssdDeviceInfo[] adnssddeviceinfo;
+            DnssdDeviceInfo[] adnssddeviceinfo;
 
             // If we don't have a selected file, then run the selection
             // function to prompt the user to pick something...
@@ -1666,7 +1643,7 @@ namespace TwainDirect.Client
             }
 
             // Grab a snapshot of what's out there...
-            adnssddeviceinfo = m_dnssd.GetSnapshot(null, out blUpdated, out blNoMonitor);
+            adnssddeviceinfo = null; // m_dnssd.GetSnapshot(null, out blUpdated, out blNoMonitor);
             if ((adnssddeviceinfo == null) || (adnssddeviceinfo.Length == 0))
             {
                 MessageBox.Show(Config.GetResource(m_resourcemanager, "errNoTwainScanners"), Config.GetResource(m_resourcemanager, "strFormScanTitle"));
@@ -1675,7 +1652,7 @@ namespace TwainDirect.Client
             }
 
             // Find our entry...
-            foreach (Dnssd.DnssdDeviceInfo dnssddeviceinfo in adnssddeviceinfo)
+            foreach (DnssdDeviceInfo dnssddeviceinfo in adnssddeviceinfo)
             {
                 if (dnssddeviceinfo.GetLinkLocal() == szLinkLocal)
                 {
@@ -1829,7 +1806,7 @@ namespace TwainDirect.Client
         /// <param name="e"></param>
         private void m_buttonSelect_Click(object sender, EventArgs e)
         {
-            bool blSuccess;
+            bool blSuccess = false;
             FormSelect formselect;
             DialogResult dialogresult;
 
@@ -1844,7 +1821,7 @@ namespace TwainDirect.Client
             // Instantiate our selection form with the list of devices, and
             // wait for the user to pick something...
             dialogresult = DialogResult.Cancel;
-            formselect = new FormSelect(m_dnssd, m_fScale, _cloudTokens, out blSuccess, m_resourcemanager);
+            formselect = new FormSelect(null, m_fScale, _cloudTokens, out blSuccess, m_resourcemanager);
             if (!blSuccess)
             {
                 SetButtons(EBUTTONSTATE.CLOSED);
@@ -2358,12 +2335,7 @@ namespace TwainDirect.Client
         /// <summary>
         /// Our selected device...
         /// </summary>
-        private Dnssd.DnssdDeviceInfo m_dnssddeviceinfo;
-
-        /// <summary>
-        /// List devices on the local area network...
-        /// </summary>
-        private Dnssd m_dnssd;
+        private DnssdDeviceInfo m_dnssddeviceinfo;
 
         /// <summary>
         /// Use if something really bad happens...

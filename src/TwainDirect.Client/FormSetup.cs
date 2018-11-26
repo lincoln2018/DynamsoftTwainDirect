@@ -36,6 +36,7 @@ using System.IO;
 using System.Resources;
 using System.Windows.Forms;
 using Dynamsoft.TwainDirect.Cloud.Support;
+using Dynamsoft.TwainDirect.Cloud.Support.Dnssd;
 
 namespace TwainDirect.Client
 {
@@ -62,7 +63,7 @@ namespace TwainDirect.Client
         /// <param name="a_twainlocalscannerclient">for encryptionReport</param>
         public FormSetup
         (
-            Dnssd.DnssdDeviceInfo a_dnssddeviceinfo,
+            DnssdDeviceInfo a_dnssddeviceinfo,
             TwainLocalScannerClient a_twainlocalscannerclient,
             string a_szWriteFolder,
             ResourceManager a_resourcemanager
@@ -529,7 +530,7 @@ namespace TwainDirect.Client
         /// <summary>
         /// The device we're talking to...
         /// </summary>
-        private Dnssd.DnssdDeviceInfo m_dnssddeviceinfo;
+        private DnssdDeviceInfo m_dnssddeviceinfo;
 
         /// <summary>
         /// For localization...

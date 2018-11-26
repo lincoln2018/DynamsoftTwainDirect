@@ -874,12 +874,12 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             {
                 Debug.WriteLine($"Waiting for cloud response: {m_CloudRequestId}");
 
-                Timer timer = new Timer(_ => completionSource.TrySetResult(null),
-                                        null, timeoutMs, Timeout.Infinite);
+                //Timer timer = new Timer(_ => completionSource.TrySetResult(null),
+               //                         null, timeoutMs, Timeout.Infinite);
 
                 var response = await completionSource.Task;
 
-                timer.Change(Timeout.Infinite, Timeout.Infinite);
+                //timer.Change(Timeout.Infinite, Timeout.Infinite);
 
                 return response;
             }

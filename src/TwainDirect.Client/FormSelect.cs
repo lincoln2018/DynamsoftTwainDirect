@@ -41,6 +41,7 @@ using Dynamsoft.TwainDirect.Cloud.Application;
 using Dynamsoft.TwainDirect.Cloud.Client;
 using Dynamsoft.TwainDirect.Cloud.Registration;
 using Dynamsoft.TwainDirect.Cloud.Support;
+using Dynamsoft.TwainDirect.Cloud.Support.Dnssd;
 using System.Threading.Tasks;
 
 namespace TwainDirect.Client
@@ -60,7 +61,7 @@ namespace TwainDirect.Client
         /// <param name="cloudTokens">TWAIN Cloud access tokens</param>
         /// <param name="a_blFoundOne">return how we did</param>
         /// <param name="a_resourcemanager">localization</param>
-        public FormSelect(Dnssd a_dnssd, float a_fScale, TwainCloudTokens cloudTokens, out bool a_blFoundOne, ResourceManager a_resourcemanager)
+        public FormSelect(object a_dnssd, float a_fScale, TwainCloudTokens cloudTokens, out bool a_blFoundOne, ResourceManager a_resourcemanager)
         {
             // Init stuff...
             InitializeComponent();
@@ -87,7 +88,6 @@ namespace TwainDirect.Client
             this.Text = Config.GetResource(m_resourcemanager, "strFormSelectTitle");
 
             // Hang onto this...
-            m_dnssd = a_dnssd;
 
             // Load the list box...
             Thread.Sleep(1000);
@@ -172,9 +172,6 @@ namespace TwainDirect.Client
         /// </summary>
         public void Cleanup()
         {
-            // We don't own this, so don't free it, but it's
-            // not a bad practice to clear it...
-            m_dnssd = null;
         }
 
         #endregion
@@ -194,14 +191,8 @@ namespace TwainDirect.Client
             {
                 int ii;
                 bool blUpdated = false;
-                bool blNoMonitor = false;
-                Dnssd.DnssdDeviceInfo[] adnssddeviceinfo;
+                DnssdDeviceInfo[] adnssddeviceinfo;
 
-                // TWAIN Local isn't running...
-                if (m_dnssd == null)
-                {
-                    return (false);
-                }
 
                 // Make a note of our current selection, if we have one, we expect our
                 // snapshot to exactly match what we have in the list, including the
@@ -220,7 +211,7 @@ namespace TwainDirect.Client
                 }
 
                 // Take a snapshot...
-                adnssddeviceinfo = m_dnssd.GetSnapshot(a_blCompare ? m_adnssddeviceinfoCompare : null, out blUpdated, out blNoMonitor);
+                adnssddeviceinfo = null;// m_dnssd.GetSnapshot(a_blCompare ? m_adnssddeviceinfoCompare : null, out blUpdated, out blNoMonitor);
 
                 // If we've been asked to compare to the previous snapshot,
                 // and if we detect that no change occurred, we can scoot...
@@ -238,24 +229,17 @@ namespace TwainDirect.Client
                 // Handle TWAIN Local: we've no data...
                 if (adnssddeviceinfo == null)
                 {
-                    if (blNoMonitor)
-                    {
-                        // Don't display anything, TWAIN Local is disabled...
-                    }
-                    else
-                    {
-                        // TWAIN Local is supported, we just didn't find any scanners...
-                        var item = new ListViewItem("*none*");
-                        item.Group = m_listviewSelect.Groups["localScannersGroup"];
-                        m_listviewSelect.Items.Add(item);
-                    }
+                    // TWAIN Local is supported, we just didn't find any scanners...
+                    var item = new ListViewItem("*none*");
+                    item.Group = m_listviewSelect.Groups["localScannersGroup"];
+                    m_listviewSelect.Items.Add(item);
                     SetButtons(ButtonState.Nodevices);
                 }
                 // Handle TWAIN Local: show what we have...
                 else
                 {
                     // Populate our driver list...
-                    foreach (Dnssd.DnssdDeviceInfo dnssddeviceinfo in adnssddeviceinfo)
+                    foreach (DnssdDeviceInfo dnssddeviceinfo in adnssddeviceinfo)
                     {
                         ListViewItem listviewitem = new ListViewItem
                         (
@@ -293,7 +277,7 @@ namespace TwainDirect.Client
                     {
                         ii = 0;
                         bool blFound = false;
-                        foreach (Dnssd.DnssdDeviceInfo dnssddeviceinfo in adnssddeviceinfo)
+                        foreach (DnssdDeviceInfo dnssddeviceinfo in adnssddeviceinfo)
                         {
                             if (   (dnssddeviceinfo.GetTxtTy() == m_dnssddeviceinfoSelected.GetTxtTy())
                                 && (dnssddeviceinfo.GetServiceName() == m_dnssddeviceinfoSelected.GetServiceName())
@@ -427,7 +411,7 @@ namespace TwainDirect.Client
             /// Which device have we selected?
             /// </summary>
             /// <returns>the one we've selected</returns>
-            public Dnssd.DnssdDeviceInfo GetSelectedDevice()
+            public DnssdDeviceInfo GetSelectedDevice()
             {
                 int ii;
 
@@ -440,7 +424,7 @@ namespace TwainDirect.Client
                     {
                         string szUrl = CloudManager.GetScannerCloudUrl(scanner);
 
-                        Dnssd.DnssdDeviceInfo dnssddeviceinfo = new Dnssd.DnssdDeviceInfo();
+                        DnssdDeviceInfo dnssddeviceinfo = new DnssdDeviceInfo();
                         dnssddeviceinfo.SetTxtHttps(true);
                         dnssddeviceinfo.SetLinkLocal(szUrl);
                         dnssddeviceinfo.SetCloud(true);
@@ -540,9 +524,8 @@ namespace TwainDirect.Client
         #region Private Attributes...
 
         private System.Windows.Forms.Timer m_timerLoadScannerNames;
-        private Dnssd m_dnssd;
-        private Dnssd.DnssdDeviceInfo m_dnssddeviceinfoSelected;
-        private Dnssd.DnssdDeviceInfo[] m_adnssddeviceinfoCompare;
+        private DnssdDeviceInfo m_dnssddeviceinfoSelected;
+        private DnssdDeviceInfo[] m_adnssddeviceinfoCompare;
         private ResourceManager m_resourcemanager;
 
         #endregion

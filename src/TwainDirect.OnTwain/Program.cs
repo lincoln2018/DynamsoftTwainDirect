@@ -148,19 +148,13 @@ namespace TwainDirect.OnTwain
         public static bool SelectMode()
         {
             int iPid = 0;
-            string szIpc;
             string szTaskFile;
             string szImagesFolder;
-            bool blTestPdfRaster;
-            string szTestDnssd;
 
             // Check the arguments...
             string szWriteFolder = Config.Get("writeFolder", null);
             string szExecutableName = Config.Get("executableName", null);
             szTaskFile = Config.Get("task", null);
-            blTestPdfRaster = (Config.Get("testpdfraster", null) != null);
-            szTestDnssd = Config.Get("testdnssd", null);
-            szIpc = Config.Get("ipc", null);
             szImagesFolder = Config.Get("images", null);
             if (string.IsNullOrEmpty(szImagesFolder))
             {
@@ -168,35 +162,6 @@ namespace TwainDirect.OnTwain
             }
             iPid = int.Parse(Config.Get("parentpid", "0"));
 
-            // Run in IPC mode.  The caller has set up a 'pipe' for us, so we'll use
-            // that to send commands back and forth.  This is the normal mode when
-            // we're running with a scanner...
-            if (szIpc != null)
-            {
-                // With Windows we need a window for the driver, but we can hide it...
-                if (TWAINCSToolkit.GetPlatform() == "WINDOWS")
-                {
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new FormTwain(szWriteFolder, szImagesFolder, szIpc, iPid, RunInUiThread));
-                    return true;
-                }
-
-                // Linux and Mac OS X are okay without a window...
-                else
-                {
-                    TwainLocalOnTwain twainlocalontwain;
-
-                    // Create our object...
-                    twainlocalontwain = new TwainLocalOnTwain(szWriteFolder, szImagesFolder, szIpc, iPid, null, null, IntPtr.Zero);
-
-                    // Run our object...
-                    twainlocalontwain.Run();
-
-                    // All done...
-                    return true;
-                }
-            }
 
             // Handle the TWAIN list, we use this during registration to find out
             // what drivers we can use, and collect some info about them...
@@ -210,68 +175,6 @@ namespace TwainDirect.OnTwain
                     szTwainList = Path.Combine(Config.Get("writeFolder", ""), "twainlist.txt");
                 }
                 System.IO.File.WriteAllText(szTwainList, ProcessSwordTask.TwainListDrivers(szTwainListAction, szTwainListData));
-                return true;
-            }
-
-            // Test DNS-SD...
-            if (!string.IsNullOrEmpty(szTestDnssd))
-            {
-                if (szTestDnssd == "monitor")
-                {
-                    int ii;
-                    int jj;
-                    Dnssd dnssd;
-                    bool blServiceIsAvailable;
-                    Interpreter.CreateConsole();
-                    Dnssd.DnssdDeviceInfo[] adnssddeviceinfo = null;
-                    dnssd = new Dnssd(Dnssd.Reason.Monitor, out blServiceIsAvailable);
-                    if (blServiceIsAvailable)
-                    {
-                        dnssd.MonitorStart(null, IntPtr.Zero);
-                        for (ii = 0; ii < 60; ii++)
-                        {
-                            bool blUpdated = false;
-                            bool blNoMonitor = false;
-                            Thread.Sleep(1000);
-                            adnssddeviceinfo = dnssd.GetSnapshot(adnssddeviceinfo, out blUpdated, out blNoMonitor);
-                            if (blUpdated)
-                            {
-                                Console.Out.WriteLine("");
-                                if ((adnssddeviceinfo == null) || (adnssddeviceinfo.Length == 0))
-                                {
-                                    Console.Out.WriteLine("***empty***");
-                                }
-                                else
-                                {
-                                    for (jj = 0; jj < adnssddeviceinfo.Length; jj++)
-                                    {
-                                        Console.Out.WriteLine(adnssddeviceinfo[jj].GetInterface() + " " + adnssddeviceinfo[jj].GetServiceName());
-                                    }
-                                }
-                            }
-                        }
-                        dnssd.MonitorStop();
-                    }
-                    dnssd.Dispose();
-                    dnssd = null;
-                }
-                else if (szTestDnssd == "register")
-                {
-                    Dnssd dnssd;
-                    bool blServiceIsAvailable;
-                    Interpreter.CreateConsole();
-                    dnssd = new Dnssd(Dnssd.Reason.Register, out blServiceIsAvailable);
-                    if (blServiceIsAvailable)
-                    {
-                        dnssd.RegisterStart("Instance", 55556, "Ty", "", "Note");
-                        Thread.Sleep(60000);
-                        dnssd.RegisterStop();
-                    }
-                    dnssd.Dispose();
-                    dnssd = null;
-                }
-
-                // All done...
                 return true;
             }
 
