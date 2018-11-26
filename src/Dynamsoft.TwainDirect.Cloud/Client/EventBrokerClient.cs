@@ -17,9 +17,9 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
 
         #endregion
 
-        public async Task Connect(string url)
+        public async Task Connect(string url, bool bClient)
         {
-            _mqttClient = new MqttClient(url);
+            _mqttClient = new MqttClient(url, bClient);
             _mqttClient.MessageReceived += (_, message) => {
                 OnReceived(message.Message);
             };

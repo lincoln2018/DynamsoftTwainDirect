@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dynamsoft.TwainDirect.Cloud.Client;
 using Dynamsoft.TwainDirect.Cloud.Registration;
+using Dynamsoft.TwainDirect.Cloud.Telemetry;
 
 namespace Dynamsoft.TwainDirect.Cloud.Application
 {
@@ -12,7 +13,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Application
     public class ApplicationManager: EventBrokerClient
     {
         #region Private Fields
-
+        private static Logger Logger = Logger.GetLogger<ApplicationManager>();
         private readonly TwainCloudClient _client;
 
         #endregion
@@ -34,10 +35,13 @@ namespace Dynamsoft.TwainDirect.Cloud.Application
 
         public async Task Connect()
         {
-            var userInfo = await GetUserInformation();
+            using (Logger.StartActivity("Connecting to cloud infrastructure"))
+            {
+                var userInfo = await GetUserInformation();
 
-            await base.Connect(userInfo.EventBroker.Url);
-            await base.Subscribe(userInfo.EventBroker.Topic);
+                await base.Connect(userInfo.EventBroker.Url, true);
+                await base.Subscribe(userInfo.EventBroker.Topic);
+            }
         }
 
         public async Task<UserInformation> GetUserInformation()

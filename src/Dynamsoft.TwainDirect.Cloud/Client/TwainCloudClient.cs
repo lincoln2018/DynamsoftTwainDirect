@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Dynamsoft.TwainDirect.Cloud.Telemetry;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -13,7 +14,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
     public class TwainCloudClient
     {
         #region Static Fields 
-
+        private static readonly Logger Logger = Logger.GetLogger<TwainCloudClient>();
         private static readonly JsonSerializerSettings JsonSettings;
         //private static readonly JsonMediaTypeFormatter DefaultFormatter;
 
@@ -77,7 +78,12 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
         /// <returns>Deserialied payload of the response.</returns>
         public async Task<TResult> Post<TResult>(string endpoint, string sendData, string mediaType)
         {
-            return await ExecuteRequest<TResult>(() => _client.PostAsync(GetEndpointUrl(endpoint), new StringContent(sendData, System.Text.Encoding.UTF8, mediaType)));
+            var request = new HttpRequestMessage(HttpMethod.Post, GetEndpointUrl(endpoint))
+            {
+                Content = sendData != null ? new StringContent(sendData, System.Text.Encoding.UTF8, mediaType) : null
+            };
+
+            return await ExecuteRequest<TResult>(() => SendRequest(request));
         }
 
         /// <summary>
@@ -88,7 +94,9 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
         /// <returns>Deserialied payload of the response.</returns>
         public async Task<TResult> Get<TResult>(string endpoint)
         {
-            return await ExecuteRequest<TResult>(() => _client.GetAsync(GetEndpointUrl(endpoint)));
+            // return await ExecuteRequest<TResult>(() => _client.GetAsync(GetEndpointUrl(endpoint)));
+            var request = new HttpRequestMessage(HttpMethod.Get, GetEndpointUrl(endpoint));
+            return await ExecuteRequest<TResult>(() => SendRequest(request));
         }
 
         #endregion
@@ -113,7 +121,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
             // TODO: kind of ugly, but should work
             return Uri.IsWellFormedUriString(endpoint, UriKind.Absolute) ? endpoint : $"{_rootUrl}/{endpoint}";
         }
-
+        /*
         private static async Task<TResult> DeserializeObject<TResult>(HttpResponseMessage httpResponse)
         {
             var response = await httpResponse.Content.ReadAsStringAsync();
@@ -132,19 +140,72 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
             }
 
             return await DeserializeObject<TResult>(response);
+        }*/
+
+        private static TResult DeserializeObject<TResult>(string responseBody)
+        {
+            return JsonConvert.DeserializeObject<TResult>(responseBody, JsonSettings);
+        }
+
+        private async Task<TResult> ExecuteRequest<TResult>(Func<Task<HttpResponseMessage>> request)
+        {
+            using (Logger.StartActivity("Executing TWAIN Cloud request"))
+            {
+                var response = await request();
+                var responseBody = await ProcessResponseMessage(response);
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    Logger.LogInfo("Refreshing access tokens...");
+                    var refreshResponse = await SendRequest(new HttpRequestMessage(HttpMethod.Get, GetEndpointUrl($"authentication/refresh/{_tokens?.RefreshToken}")));
+                    var refreshBody = await ProcessResponseMessage(refreshResponse);
+
+                    var tokens = DeserializeObject<TwainCloudTokens>(refreshBody);
+                    UpdateTokens(tokens);
+
+                    Logger.LogInfo("Repeat request with updated tokens...");
+                    response = await request();
+                    responseBody = await ProcessResponseMessage(response);
+                }
+
+                return DeserializeObject<TResult>(responseBody);
+            }
         }
 
         private void UpdateTokens(TwainCloudTokens tokens)
         {
-            _tokens = tokens;
-
-            if (_tokens?.AuthorizationToken != null)
+            using (Logger.StartActivity("Updating access tokens"))
             {
-                _client.DefaultRequestHeaders.Remove("Authorization");
-                _client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", _tokens.AuthorizationToken);
+                _tokens = tokens;
+
+                if (_tokens?.AuthorizationToken != null)
+                {
+                    _client.DefaultRequestHeaders.Remove("Authorization");
+                    _client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", _tokens.AuthorizationToken);
+                }
             }
 
             OnTokensRefreshed(new TokensRefreshedEventArgs { Tokens = _tokens });
+        }
+        
+        private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
+        {
+            await ProcessRequestMessage(request);
+            return await _client.SendAsync(request);
+        }
+
+        private static async Task ProcessRequestMessage(HttpRequestMessage request)
+        {
+            var requestBody = request.Content != null ? await request.Content.ReadAsStringAsync() : null;
+            Logger.LogDebug($"Request: {request}{Environment.NewLine}{requestBody}");
+        }
+
+        private static async Task<string> ProcessResponseMessage(HttpResponseMessage response)
+        {
+            var responseBody = response.Content != null ? await response.Content.ReadAsStringAsync() : null;
+            Logger.LogDebug($"Response: {response}{Environment.NewLine}{responseBody}");
+
+            return responseBody;
         }
 
         #endregion

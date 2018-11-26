@@ -61,6 +61,13 @@
     <Compile Include="Registration\RegistrationManager.cs" />
     <Compile Include="Registration\RegistrationResponse.cs" />
     <Compile Include="Registration\ScannerInformation.cs" />
+    <Compile Include="Telemetry\ActivityScope.cs" />
+    <Compile Include="Telemetry\Adapters\TraceSourceLoggerAdapter.cs" />
+    <Compile Include="Telemetry\IContextExtender.cs" />
+    <Compile Include="Telemetry\ILoggerAdapter.cs" />
+    <Compile Include="Telemetry\Logger.cs" />
+    <Compile Include="Telemetry\LogLevel.cs" />
+    <Compile Include="Telemetry\TelemetryContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MQTTnet\MQTTnet.csproj">

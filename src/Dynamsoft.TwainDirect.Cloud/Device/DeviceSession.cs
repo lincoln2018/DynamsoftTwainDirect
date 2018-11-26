@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dynamsoft.TwainDirect.Cloud.Client;
+using Dynamsoft.TwainDirect.Cloud.Telemetry;
 
 namespace Dynamsoft.TwainDirect.Cloud.Device
 {
@@ -10,6 +11,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Device
     public class DeviceSession: EventBrokerClient
     {
         #region Private Fields
+        private static Logger Logger = Logger.GetLogger<DeviceSession>();
 
         private readonly TwainCloudClient _client;
         private readonly string _scannerId;
@@ -40,11 +42,14 @@ namespace Dynamsoft.TwainDirect.Cloud.Device
         /// <returns></returns>
         public async Task Connect()
         {
-            var scannerInfo = await _client.Get<ScannerStatusResponse>($"scanners/{_scannerId}");
-            _cloudTopicName = scannerInfo.ResponseTopic;
+            using (Logger.StartActivity("Connecting to cloud infrastructure"))
+            {
+                var scannerInfo = await _client.Get<ScannerStatusResponse>($"scanners/{_scannerId}");
+                _cloudTopicName = scannerInfo.ResponseTopic;
 
-            await base.Connect(scannerInfo.Url);
-            await base.Subscribe(scannerInfo.RequestTopic);
+                await base.Connect(scannerInfo.Url, false);
+                await base.Subscribe(scannerInfo.RequestTopic);
+            }
         }
 
         /// <summary>
