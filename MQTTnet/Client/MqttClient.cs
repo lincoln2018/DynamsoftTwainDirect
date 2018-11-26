@@ -399,7 +399,7 @@ namespace MQTTnet.Client
                 }
 
                 _packetDispatcher.Dispatch(exception);
-                await DisconnectInternalAsync(_packetReceiverTask, exception).ConfigureAwait(false);
+                //await DisconnectInternalAsync(_packetReceiverTask, exception).ConfigureAwait(false);
             }
             finally
             {
