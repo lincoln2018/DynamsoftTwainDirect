@@ -108,7 +108,7 @@ using Dynamsoft.TwainDirect.Cloud.Application;
 using Dynamsoft.TwainDirect.Cloud.Client;
 using Dynamsoft.TwainDirect.Cloud.Device;
 using Newtonsoft.Json;
-
+using System.Text.RegularExpressions;
 
 // This namespace supports applications and scanners...
 namespace Dynamsoft.TwainDirect.Cloud.Support
@@ -2149,7 +2149,20 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
 
                 // Init stuff...
                 szTwainDirectOnTwain = Config.Get("executablePath", "");
-                szTwainDirectOnTwain = szTwainDirectOnTwain.Replace("TwainDirect.Scanner.EXE", "TwainDirect.OnTwain.EXE");
+
+                int ipos = szTwainDirectOnTwain.ToLowerInvariant().IndexOf("twaindirect.scanner.exe");
+
+                if(ipos >= 0)
+                {
+                    String curFileName = "twaindirect.scanner.exe";
+
+                    string path = szTwainDirectOnTwain.Substring(0, ipos);
+                    string last = szTwainDirectOnTwain.Substring(ipos + curFileName.Length);
+
+                    szTwainDirectOnTwain = path + "TwainDirect.OnTwain.exe" + last;
+                }
+
+
 
                 // State check...
                 if (m_twainlocalsession.GetSessionState() != SessionState.noSession)

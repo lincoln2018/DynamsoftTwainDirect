@@ -90,5 +90,6 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// 
         /// </summary>
         public Dictionary<string, string> Headers { get; set; }
+
     }
 }

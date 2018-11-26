@@ -852,8 +852,9 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
                 {
                     completionSource.SetResult(cloudMessage);
                 }
-                catch
+                catch(Exception e1)
                 {
+                    Debug.WriteLine($"Completing cloud request: {e1.Message}");
                 }
             }
         }
@@ -866,10 +867,20 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         {
             TaskCompletionSource < CloudDeviceResponse > completionSource;
 
+
+            const int timeoutMs = 10000;
+
             if (OutstandingCloudRequests.TryGetValue(m_CloudRequestId, out completionSource))
             {
                 Debug.WriteLine($"Waiting for cloud response: {m_CloudRequestId}");
+
+                Timer timer = new Timer(_ => completionSource.TrySetResult(null),
+                                        null, timeoutMs, Timeout.Infinite);
+
                 var response = await completionSource.Task;
+
+                timer.Change(Timeout.Infinite, Timeout.Infinite);
+
                 return response;
             }
 
@@ -891,12 +902,21 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
 
                 if (m_dnssddeviceinfo.IsCloud())
                 {
-                    WebResponse response = request.EndGetResponse(a_iasyncresult);
+                    //WebResponse response = request.EndGetResponse(a_iasyncresult);
 
                     var cloudResponse = await WaitCloudResponse();
 
                     Debug.WriteLine($"Wait completed, starting processing");
 
+                    if (cloudResponse == null)
+                    {
+                        cloudResponse = new CloudDeviceResponse();
+                        cloudResponse.StatusCode = 600;
+                        cloudResponse.Body = "{}";
+                        WebResponse response = request.EndGetResponse(a_iasyncresult);
+                        m_httprequestdata.autoreseteventHttpWebRequest.Set();
+                        return;
+                    }
 
                     var headers = new NameValueCollection();
                     foreach(var pair in cloudResponse.Headers)
