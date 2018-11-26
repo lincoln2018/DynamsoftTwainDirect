@@ -67,19 +67,10 @@ namespace TwainDirect.Scanner
             {
                 szCurrentUiCulture = Thread.CurrentThread.CurrentUICulture.ToString();
             }
-            switch (szCurrentUiCulture.ToLower())
-            {
-                default:
-                    Log.Info("UiCulture: " + szCurrentUiCulture + " (not supported, so using en-US)");
-                    m_resourcemanager = lang_en_US.ResourceManager;
-                    Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
-                    break;
-                case "en-us":
-                    Log.Info("UiCulture: " + szCurrentUiCulture);
-                    m_resourcemanager = lang_en_US.ResourceManager;
-                    Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
-                    break;
-            }
+
+            Log.Info("UiCulture: " + szCurrentUiCulture + " (not supported, so using en-US)");
+            m_resourcemanager = lang_en_US.ResourceManager;
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 
             // Init our form...
             InitializeComponent();
