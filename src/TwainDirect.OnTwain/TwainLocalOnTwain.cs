@@ -113,7 +113,7 @@ namespace TwainDirect.OnTwain
             string szSession;
             Ipc ipc;
             ProcessSwordTask processswordtask;
-            TwainLocalScanner.ApiStatus apistatus;
+            TwainScannerBase.ApiStatus apistatus;
 
             // Pipe mode starting...
             TWAINWorkingGroup.Log.Info("IPC mode starting...");
@@ -157,7 +157,7 @@ namespace TwainDirect.OnTwain
 
                     case "closeSession":
                         apistatus = DeviceScannerCloseSession(out szSession);
-                        if (apistatus == TwainLocalScanner.ApiStatus.success)
+                        if (apistatus == TwainScannerBase.ApiStatus.success)
                         {
                             blSuccess = ipc.Write
                             (
@@ -210,7 +210,7 @@ namespace TwainDirect.OnTwain
 
                     case "getSession":
                         apistatus = DeviceScannerGetSession(out szSession);
-                        if (apistatus == TwainLocalScanner.ApiStatus.success)
+                        if (apistatus == TwainScannerBase.ApiStatus.success)
                         {
                             blSuccess = ipc.Write
                             (
@@ -249,7 +249,7 @@ namespace TwainDirect.OnTwain
 
                     case "startCapturing":
                         apistatus = DeviceScannerStartCapturing(ref blSetAppCapabilities, out szSession);
-                        if (apistatus == TwainLocalScanner.ApiStatus.success)
+                        if (apistatus == TwainScannerBase.ApiStatus.success)
                         {
                             blSuccess = ipc.Write
                             (
@@ -277,7 +277,7 @@ namespace TwainDirect.OnTwain
 
                     case "stopCapturing":
                         apistatus = DeviceScannerStopCapturing(out szSession);
-                        if (apistatus == TwainLocalScanner.ApiStatus.success)
+                        if (apistatus == TwainScannerBase.ApiStatus.success)
                         {
                             blSuccess = ipc.Write
                             (
@@ -1033,7 +1033,7 @@ namespace TwainDirect.OnTwain
         /// </summary>
         /// <param name="a_szSession">the session data</param>
         /// <returns>a twain local status</returns>
-        private TwainLocalScanner.ApiStatus DeviceScannerCloseSession(out string a_szSession)
+        private TwainScannerBase.ApiStatus DeviceScannerCloseSession(out string a_szSession)
         {
             string szStatus;
             string szUserinterface;
@@ -1044,7 +1044,7 @@ namespace TwainDirect.OnTwain
             // Validate...
             if ((m_twaincstoolkit == null) || (m_szTwainDriverIdentity == null))
             {
-                return (TwainLocalScanner.ApiStatus.invalidSessionId);
+                return (TwainScannerBase.ApiStatus.invalidSessionId);
             }
 
             // Build the reply (we need this before the close so that we can get
@@ -1060,7 +1060,7 @@ namespace TwainDirect.OnTwain
                 m_twaincstoolkit.Cleanup();
                 m_twaincstoolkit = null;
                 m_szTwainDriverIdentity = null;
-                return (TwainLocalScanner.ApiStatus.success);
+                return (TwainScannerBase.ApiStatus.success);
             }
 
             // Make sure we're going bye-bye...
@@ -1094,7 +1094,7 @@ namespace TwainDirect.OnTwain
             }
 
             // All done...
-            return (TwainLocalScanner.ApiStatus.success);
+            return (TwainScannerBase.ApiStatus.success);
         }
 
         /// <summary>
@@ -1103,7 +1103,7 @@ namespace TwainDirect.OnTwain
         /// <param name="a_jsonlookup">data for the open</param>
         /// <param name="a_szSession">the session data</param>
         /// <returns>a twain local status</returns>
-        private TwainLocalScanner.ApiStatus DeviceScannerCreateSession(JsonLookup a_jsonlookup, out string a_szSession)
+        private TwainScannerBase.ApiStatus DeviceScannerCreateSession(JsonLookup a_jsonlookup, out string a_szSession)
         {
             string szStatus;
             TWAIN.STS sts;
@@ -1126,7 +1126,7 @@ namespace TwainDirect.OnTwain
                 TWAINWorkingGroup.Log.Error("Could not create <" + m_szImagesFolder + "> - " + exception.Message);
                 m_twaincstoolkit = null;
                 m_szTwainDriverIdentity = null;
-                return (TwainLocalScanner.ApiStatus.newSessionNotAllowed);
+                return (TwainScannerBase.ApiStatus.newSessionNotAllowed);
             }
 
             // Create the toolkit...
@@ -1159,7 +1159,7 @@ namespace TwainDirect.OnTwain
             {
                 m_twaincstoolkit = null;
                 m_szTwainDriverIdentity = null;
-                return (TwainLocalScanner.ApiStatus.newSessionNotAllowed);
+                return (TwainScannerBase.ApiStatus.newSessionNotAllowed);
             }
 
             // Load our deviceregister object...
@@ -1169,11 +1169,11 @@ namespace TwainDirect.OnTwain
             // Life sucks.
             // On a side note, the ty= field contains the TW_IDENTITY.ProductName
             // we need to find our scanner...
-            if (TwainLocalScanner.GetPlatform() == TwainLocalScanner.Platform.WINDOWS)
+            if (TwainScannerBase.GetPlatform() == TwainScannerBase.Platform.WINDOWS)
             {
                 m_szTwainDriverIdentity = "0,0,0,USA,USA, ,0,0,0xFFFFFFFF, , ," + m_deviceregisterSession.GetTwainLocalTy();
             }
-            else if (TwainLocalScanner.GetPlatform() == TwainLocalScanner.Platform.MACOSX)
+            else if (TwainScannerBase.GetPlatform() == TwainScannerBase.Platform.MACOSX)
             {
                 m_szTwainDriverIdentity = "0,0,0,USA,USA, ,0,0,0xFFFFFFFF, , ," + m_deviceregisterSession.GetTwainLocalTy();
             }
@@ -1187,14 +1187,14 @@ namespace TwainDirect.OnTwain
             sts = m_twaincstoolkit.Send("DG_CONTROL", "DAT_IDENTITY", "MSG_OPENDS", ref m_szTwainDriverIdentity, ref szStatus);
             if (sts != TWAIN.STS.SUCCESS)
             {
-                return (TwainLocalScanner.ApiStatus.newSessionNotAllowed);
+                return (TwainScannerBase.ApiStatus.newSessionNotAllowed);
             }
 
             // Build the reply...
             DeviceScannerGetSession(out a_szSession);
 
             // All done...
-            return (TwainLocalScanner.ApiStatus.success);
+            return (TwainScannerBase.ApiStatus.success);
         }
 
         /// <summary>
@@ -1202,7 +1202,7 @@ namespace TwainDirect.OnTwain
         /// </summary>
         /// <param name="a_szSession">the session data</param>
         /// <returns>status of the call</returns>
-        private TwainLocalScanner.ApiStatus DeviceScannerGetSession(out string a_szSession)
+        private TwainScannerBase.ApiStatus DeviceScannerGetSession(out string a_szSession)
         {
             string[] aszFiles;
             string[] aszTw = null;
@@ -1213,7 +1213,7 @@ namespace TwainDirect.OnTwain
             // Validate...
             if ((m_twaincstoolkit == null) || (m_szTwainDriverIdentity == null))
             {
-                return (TwainLocalScanner.ApiStatus.invalidSessionId);
+                return (TwainScannerBase.ApiStatus.invalidSessionId);
             }
 
             // Look for images, the nice thing about this is that we don't
@@ -1271,7 +1271,7 @@ namespace TwainDirect.OnTwain
             a_szSession += "}";
 
             // All done...
-            return (TwainLocalScanner.ApiStatus.success);
+            return (TwainScannerBase.ApiStatus.success);
         }
 
         /// <summary>
@@ -1281,7 +1281,7 @@ namespace TwainDirect.OnTwain
         /// <param name="a_processswordtask">the result of the task</param>
         /// <param name="a_blSetAppCapabilities">set the application capabilities (ex: ICAP_XFERMECH)</param>
         /// <returns>a twain local status</returns>
-        private TwainLocalScanner.ApiStatus DeviceScannerSendTask(JsonLookup a_jsonlookup, out ProcessSwordTask a_processswordtask, ref bool a_blSetAppCapabilities)
+        private TwainScannerBase.ApiStatus DeviceScannerSendTask(JsonLookup a_jsonlookup, out ProcessSwordTask a_processswordtask, ref bool a_blSetAppCapabilities)
         {
             bool blSuccess;
             string szTask;
@@ -1329,7 +1329,7 @@ namespace TwainDirect.OnTwain
                     Marshal.FreeHGlobal(intptrTask);
                     intptrTask = IntPtr.Zero;
                     //m_swordtaskresponse.SetError("fail", null, "invalidJson", lResponseCharacterOffset);
-                    return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                    return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                 }
 
                 // TBD: Open up the reply (we should probably get the CsvToTwaindirect
@@ -1341,7 +1341,7 @@ namespace TwainDirect.OnTwain
                     Marshal.FreeHGlobal(intptrTask);
                     intptrTask = IntPtr.Zero;
                     //m_swordtaskresponse.SetError("fail", null, "invalidJson", lResponseCharacterOffset);
-                    return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                    return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                 }
 
                 // Get the reply data...
@@ -1351,7 +1351,7 @@ namespace TwainDirect.OnTwain
                     TWAINWorkingGroup.Log.Error("Process: MSG_SENDTASK failed");
                     Marshal.FreeHGlobal(intptrTask);
                     intptrTask = IntPtr.Zero;
-                    return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                    return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                 }
                 IntPtr intptrReceiveHandle = new IntPtr(lReceive);
                 uint u32ReceiveBytes;
@@ -1362,7 +1362,7 @@ namespace TwainDirect.OnTwain
                     Marshal.FreeHGlobal(intptrTask);
                     intptrTask = IntPtr.Zero;
                     //m_swordtaskresponse.SetError("fail", null, "invalidJson", lResponseCharacterOffset);
-                    return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                    return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                 }
 
                 // Convert it to an array and then a string...
@@ -1379,7 +1379,7 @@ namespace TwainDirect.OnTwain
 
                 // Squirrel the reply away...
                 a_processswordtask.SetTaskReply(szReceive);
-                return (TwainLocalScanner.ApiStatus.success);
+                return (TwainScannerBase.ApiStatus.success);
             }
 
             #endregion
@@ -1391,20 +1391,20 @@ namespace TwainDirect.OnTwain
             blSuccess = a_processswordtask.Deserialize(szTask, "211a1e90-11e1-11e5-9493-1697f925ec7b");
             if (!blSuccess)
             {
-                return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
             }
 
             // Process our task...
             blSuccess = a_processswordtask.ProcessAndRun(out m_configurenamelookup, out m_szEncryptionProfileName);
             if (!blSuccess)
             {
-                return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
             }
 
             #endregion
 
             // All done...
-            return (TwainLocalScanner.ApiStatus.success);
+            return (TwainScannerBase.ApiStatus.success);
         }
 
 
@@ -1414,7 +1414,7 @@ namespace TwainDirect.OnTwain
         /// <param name="a_blSetAppCapabilities"></param>
         /// <param name="a_szSession">the session data</param>
         /// <returns>a twain local status</returns>
-        private TwainLocalScanner.ApiStatus DeviceScannerStartCapturing(ref bool a_blSetAppCapabilities, out string a_szSession)
+        private TwainScannerBase.ApiStatus DeviceScannerStartCapturing(ref bool a_blSetAppCapabilities, out string a_szSession)
         {
             string szStatus;
             string szCapability;
@@ -1433,7 +1433,7 @@ namespace TwainDirect.OnTwain
             // Validate...
             if (m_twaincstoolkit == null)
             {
-                return (TwainLocalScanner.ApiStatus.invalidSessionId);
+                return (TwainScannerBase.ApiStatus.invalidSessionId);
             }
 
             // Only do this if we haven't done it already...
@@ -1454,7 +1454,7 @@ namespace TwainDirect.OnTwain
                     if (sts != TWAIN.STS.SUCCESS)
                     {
                         TWAINWorkingGroup.Log.Info("Action: we can't set ICAP_XFERMECH to TWSX_MEMFILE");
-                        return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                        return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                     }
 
                     // No UI...
@@ -1464,7 +1464,7 @@ namespace TwainDirect.OnTwain
                     if (sts != TWAIN.STS.SUCCESS)
                     {
                         TWAINWorkingGroup.Log.Error("Action: we can't set CAP_INDICATORS to FALSE");
-                        return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                        return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                     }
 
                     // Ask for extended image info...
@@ -1479,7 +1479,7 @@ namespace TwainDirect.OnTwain
                         if (sts != TWAIN.STS.SUCCESS)
                         {
                             TWAINWorkingGroup.Log.Warn("Action: we can't set ICAP_EXTIMAGEINFO to TRUE");
-                            return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                            return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                         }
                     }
 
@@ -1490,7 +1490,7 @@ namespace TwainDirect.OnTwain
                     if (sts != TWAIN.STS.SUCCESS)
                     {
                         TWAINWorkingGroup.Log.Warn("Action: we can't set ICAP_IMAGEFILEFORMAT to TWFF_PDFRASTER");
-                        return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                        return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                     }
 
                     // Ask for PDF/raster again (kinda), because interfaces are hard,
@@ -1504,7 +1504,7 @@ namespace TwainDirect.OnTwain
                     if (sts != TWAIN.STS.SUCCESS)
                     {
                         TWAINWorkingGroup.Log.Warn("Action: we can't set DAT_SETUPFILEXFER to TWFF_PDFRASTER");
-                        return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                        return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                     }
                 }
 
@@ -1520,7 +1520,7 @@ namespace TwainDirect.OnTwain
                         if (sts != TWAIN.STS.SUCCESS)
                         {
                             TWAINWorkingGroup.Log.Info("Action: we can't set ICAP_XFERMECH to TWSX_MEMORY");
-                            return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                            return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                         }
                     }
                     // Native transfer (basic)...
@@ -1532,7 +1532,7 @@ namespace TwainDirect.OnTwain
                         if (sts != TWAIN.STS.SUCCESS)
                         {
                             TWAINWorkingGroup.Log.Info("Action: we can't set ICAP_XFERMECH to TWSX_MEMORY");
-                            return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                            return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                         }
                     }
 
@@ -1543,7 +1543,7 @@ namespace TwainDirect.OnTwain
                     if (sts != TWAIN.STS.SUCCESS)
                     {
                         TWAINWorkingGroup.Log.Error("Action: we can't set CAP_INDICATORS to FALSE");
-                        return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+                        return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
                     }
 
                     // Ask for extended image info...
@@ -1580,10 +1580,10 @@ namespace TwainDirect.OnTwain
                     case TWAIN.STS.CANCEL:
                     case TWAIN.STS.NOMEDIA:
                         SetImageBlocksDrained(TWAIN.STS.NOMEDIA);
-                        return (TwainLocalScanner.ApiStatus.noMedia);
+                        return (TwainScannerBase.ApiStatus.noMedia);
                     case TWAIN.STS.BUSY:
                         SetImageBlocksDrained(TWAIN.STS.BUSY);
-                        return (TwainLocalScanner.ApiStatus.busy);
+                        return (TwainScannerBase.ApiStatus.busy);
                 }
             }
 
@@ -1593,9 +1593,9 @@ namespace TwainDirect.OnTwain
             // All done...
             if (sts == TWAIN.STS.SUCCESS)
             {
-                return (TwainLocalScanner.ApiStatus.success);
+                return (TwainScannerBase.ApiStatus.success);
             }
-            return (TwainLocalScanner.ApiStatus.invalidCapturingOptions);
+            return (TwainScannerBase.ApiStatus.invalidCapturingOptions);
         }
 
         /// <summary>
@@ -1604,7 +1604,7 @@ namespace TwainDirect.OnTwain
         /// </summary>
         /// <param name="a_szSession">the session data</param>
         /// <returns>a twain local status</returns>
-        private TwainLocalScanner.ApiStatus DeviceScannerStopCapturing(out string a_szSession)
+        private TwainScannerBase.ApiStatus DeviceScannerStopCapturing(out string a_szSession)
         {
             // Init stuff...
             a_szSession = "";
@@ -1612,7 +1612,7 @@ namespace TwainDirect.OnTwain
             // Validate...
             if (m_twaincstoolkit == null)
             {
-                return (TwainLocalScanner.ApiStatus.invalidSessionId);
+                return (TwainScannerBase.ApiStatus.invalidSessionId);
             }
 
             // We can't stop the feeder from here, because it can only be issued
@@ -1624,7 +1624,7 @@ namespace TwainDirect.OnTwain
             DeviceScannerGetSession(out a_szSession);
 
             // Oh well, we'll try to abort...
-            return (TwainLocalScanner.ApiStatus.success);
+            return (TwainScannerBase.ApiStatus.success);
         }
 
         #endregion

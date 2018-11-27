@@ -70,6 +70,7 @@
     <Compile Include="nativemethods.cs" />
     <Compile Include="pdfraster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="twainCloudScanner.cs" />
     <Compile Include="twainlocalscanner.cs" />
   </ItemGroup>
   <ItemGroup>

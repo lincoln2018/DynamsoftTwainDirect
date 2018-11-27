@@ -64,7 +64,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         public static StreamReader CreateConsole()
         {
             // Make sure we have a console...
-            if (TwainLocalScanner.GetPlatform() == TwainLocalScanner.Platform.WINDOWS)
+            if (TwainScannerBase.GetPlatform() == TwainScannerBase.Platform.WINDOWS)
             {
                 // Get our console...
                 NativeMethods.AllocConsole();
@@ -92,7 +92,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         public static IntPtr GetDesktopWindow()
         {
             // Get an hwnd...
-            if (TwainLocalScanner.GetPlatform() == TwainLocalScanner.Platform.WINDOWS)
+            if (TwainScannerBase.GetPlatform() == TwainScannerBase.Platform.WINDOWS)
             {
                 return (NativeMethods.GetDesktopWindow());
             }

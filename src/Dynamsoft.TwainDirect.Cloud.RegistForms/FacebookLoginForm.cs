@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Web;
 using System.Windows.Forms;
 using Dynamsoft.TwainDirect.Cloud.Client;
+using System.Threading;
 
 namespace Dynamsoft.TwainDirect.Cloud.RegistForms
 {
@@ -23,7 +24,21 @@ namespace Dynamsoft.TwainDirect.Cloud.RegistForms
         {
             InitializeComponent();
 
-            webBrowser.Navigate(loginUrl);
+            ThreadWebBrowser(loginUrl);
+        }
+
+        private void ThreadWebBrowser(string url)
+        {
+            webBrowser.Navigate(url);
+            //Thread tread = new Thread(new ParameterizedThreadStart(BeginCatch));
+            //tread.SetApartmentState(ApartmentState.STA);
+            //tread.Start(url);
+        }
+
+        private void BeginCatch(object obj)
+        {
+            webBrowser.ScriptErrorsSuppressed = true;
+            webBrowser.Navigate(obj.ToString());
         }
 
         /// <summary>

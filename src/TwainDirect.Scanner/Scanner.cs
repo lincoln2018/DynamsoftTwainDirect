@@ -47,7 +47,7 @@ using Dynamsoft.TwainDirect.Cloud.Support;
 
 namespace TwainDirect.Scanner
 {
-    internal sealed class Scanner : IDisposable
+    internal class Scanner : IDisposable
     {
         ///////////////////////////////////////////////////////////////////////////////
         // Public Methods...
@@ -64,7 +64,7 @@ namespace TwainDirect.Scanner
         public Scanner
         (
             ResourceManager a_resourcemanager,
-            TwainLocalScannerDevice.DisplayCallback a_displaycallback,
+            TwainCloudScannerDevice.DisplayCallback a_displaycallback,
             float a_fConfirmScanScale,
             out bool a_blNoDevices
         )
@@ -101,7 +101,7 @@ namespace TwainDirect.Scanner
             }
 
             // Get our TWAIN Local interface...
-            m_twainlocalscannerdevice = new TwainLocalScannerDevice(null, a_fConfirmScanScale, Display, true);
+            m_twainlocalscannerdevice = new TwainCloudScannerDevice(null, a_fConfirmScanScale, Display, true);
             if (m_twainlocalscannerdevice == null)
             {
                 Log.Error("Failed to create TwainLocalScanner");
@@ -579,7 +579,7 @@ namespace TwainDirect.Scanner
                 }
                 else if (IntPtr.Size > 4) // szDataFolder.Contains("x64"))
                 {
-                    if (TwainLocalScanner.GetPlatform() == TwainLocalScanner.Platform.WINDOWS)
+                    if (TwainScannerBase.GetPlatform() == TwainScannerBase.Platform.WINDOWS)
                     {
                         szPlatform = "x64";
                     }
@@ -631,7 +631,7 @@ namespace TwainDirect.Scanner
         /// <summary>
         /// Our scanner interface...
         /// </summary>
-        private TwainLocalScannerDevice m_twainlocalscannerdevice;
+        private TwainCloudScannerDevice m_twainlocalscannerdevice;
 
         /// <summary>
         /// Resource for localization...
@@ -641,7 +641,7 @@ namespace TwainDirect.Scanner
         /// <summary>
         /// Optional display callback...
         /// </summary>
-        private TwainLocalScannerDevice.DisplayCallback m_displaycallback;
+        private TwainCloudScannerDevice.DisplayCallback m_displaycallback;
 
         /// <summary>
         /// Full path to TWAIN-Direct-on-TWAIN or TWAIN-Direct-

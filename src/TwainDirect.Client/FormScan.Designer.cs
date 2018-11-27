@@ -38,7 +38,7 @@
             this.m_textbox1 = new System.Windows.Forms.TextBox();
             this.m_textbox2 = new System.Windows.Forms.TextBox();
             this.m_textboxSummary = new System.Windows.Forms.TextBox();
-            this.cloudButton = new System.Windows.Forms.Button();
+            this.cloudLogin = new System.Windows.Forms.Button();
             this.cloudMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.loginWithGoogleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loginWithFacebookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,7 +62,7 @@
             // m_buttonScan
             // 
             this.m_buttonScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_buttonScan.Location = new System.Drawing.Point(533, 507);
+            this.m_buttonScan.Location = new System.Drawing.Point(513, 507);
             this.m_buttonScan.Name = "m_buttonScan";
             this.m_buttonScan.Size = new System.Drawing.Size(75, 23);
             this.m_buttonScan.TabIndex = 1;
@@ -73,7 +73,7 @@
             // m_buttonSetup
             // 
             this.m_buttonSetup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_buttonSetup.Location = new System.Drawing.Point(452, 507);
+            this.m_buttonSetup.Location = new System.Drawing.Point(413, 507);
             this.m_buttonSetup.Name = "m_buttonSetup";
             this.m_buttonSetup.Size = new System.Drawing.Size(75, 23);
             this.m_buttonSetup.TabIndex = 3;
@@ -96,7 +96,7 @@
             // m_buttonClose
             // 
             this.m_buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.m_buttonClose.Location = new System.Drawing.Point(95, 507);
+            this.m_buttonClose.Location = new System.Drawing.Point(313, 507);
             this.m_buttonClose.Name = "m_buttonClose";
             this.m_buttonClose.Size = new System.Drawing.Size(75, 23);
             this.m_buttonClose.TabIndex = 5;
@@ -107,7 +107,7 @@
             // m_buttonOpen
             // 
             this.m_buttonOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.m_buttonOpen.Location = new System.Drawing.Point(13, 507);
+            this.m_buttonOpen.Location = new System.Drawing.Point(213, 507);
             this.m_buttonOpen.Name = "m_buttonOpen";
             this.m_buttonOpen.Size = new System.Drawing.Size(75, 23);
             this.m_buttonOpen.TabIndex = 6;
@@ -118,7 +118,7 @@
             // m_buttonStop
             // 
             this.m_buttonStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_buttonStop.Location = new System.Drawing.Point(614, 507);
+            this.m_buttonStop.Location = new System.Drawing.Point(613, 507);
             this.m_buttonStop.Name = "m_buttonStop";
             this.m_buttonStop.Size = new System.Drawing.Size(75, 23);
             this.m_buttonStop.TabIndex = 7;
@@ -139,7 +139,7 @@
             // m_buttonSelect
             // 
             this.m_buttonSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.m_buttonSelect.Location = new System.Drawing.Point(176, 507);
+            this.m_buttonSelect.Location = new System.Drawing.Point(113, 507);
             this.m_buttonSelect.Name = "m_buttonSelect";
             this.m_buttonSelect.Size = new System.Drawing.Size(75, 23);
             this.m_buttonSelect.TabIndex = 9;
@@ -179,16 +179,16 @@
             this.m_textboxSummary.Size = new System.Drawing.Size(676, 20);
             this.m_textboxSummary.TabIndex = 15;
             // 
-            // cloudButton
+            // cloudLogin
             // 
-            this.cloudButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.cloudButton.Location = new System.Drawing.Point(314, 507);
-            this.cloudButton.Name = "cloudButton";
-            this.cloudButton.Size = new System.Drawing.Size(75, 23);
-            this.cloudButton.TabIndex = 16;
-            this.cloudButton.Text = "cloud...";
-            this.cloudButton.UseVisualStyleBackColor = true;
-            this.cloudButton.Click += new System.EventHandler(this.cloudButton_Click);
+            this.cloudLogin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cloudLogin.Location = new System.Drawing.Point(13, 507);
+            this.cloudLogin.Name = "cloudLogin";
+            this.cloudLogin.Size = new System.Drawing.Size(75, 23);
+            this.cloudLogin.TabIndex = 16;
+            this.cloudLogin.Text = "Login...";
+            this.cloudLogin.UseVisualStyleBackColor = true;
+            this.cloudLogin.Click += new System.EventHandler(this.cloudLogin_Click);
             // 
             // cloudMenuStrip
             // 
@@ -196,12 +196,12 @@
             this.loginWithGoogleToolStripMenuItem,
             this.loginWithFacebookToolStripMenuItem});
             this.cloudMenuStrip.Name = "cloudMenuStrip";
-            this.cloudMenuStrip.Size = new System.Drawing.Size(194, 48);
+            this.cloudMenuStrip.Size = new System.Drawing.Size(206, 48);
             // 
             // loginWithGoogleToolStripMenuItem
             // 
             this.loginWithGoogleToolStripMenuItem.Name = "loginWithGoogleToolStripMenuItem";
-            this.loginWithGoogleToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.loginWithGoogleToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.loginWithGoogleToolStripMenuItem.Tag = "google";
             this.loginWithGoogleToolStripMenuItem.Text = "Login with Google...";
             this.loginWithGoogleToolStripMenuItem.Click += new System.EventHandler(this.loginToolStripMenuItem_Click);
@@ -209,7 +209,7 @@
             // loginWithFacebookToolStripMenuItem
             // 
             this.loginWithFacebookToolStripMenuItem.Name = "loginWithFacebookToolStripMenuItem";
-            this.loginWithFacebookToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.loginWithFacebookToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.loginWithFacebookToolStripMenuItem.Tag = "facebook";
             this.loginWithFacebookToolStripMenuItem.Text = "Login with Facebook...";
             this.loginWithFacebookToolStripMenuItem.Click += new System.EventHandler(this.loginToolStripMenuItem_Click);
@@ -219,7 +219,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(702, 545);
-            this.Controls.Add(this.cloudButton);
+            this.Controls.Add(this.cloudLogin);
             this.Controls.Add(this.m_textboxSummary);
             this.Controls.Add(this.m_textbox2);
             this.Controls.Add(this.m_textbox1);
@@ -256,7 +256,7 @@
         private System.Windows.Forms.TextBox m_textbox1;
         private System.Windows.Forms.TextBox m_textbox2;
         private System.Windows.Forms.TextBox m_textboxSummary;
-        private System.Windows.Forms.Button cloudButton;
+        private System.Windows.Forms.Button cloudLogin;
         private System.Windows.Forms.ContextMenuStrip cloudMenuStrip;
         private System.ComponentModel.IContainer components;
         private System.Windows.Forms.ToolStripMenuItem loginWithGoogleToolStripMenuItem;

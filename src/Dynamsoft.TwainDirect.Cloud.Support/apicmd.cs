@@ -49,6 +49,7 @@ using System.Threading.Tasks;
 using Dynamsoft.TwainDirect.Cloud.Application;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Dynamsoft.TwainDirect.Cloud.Support.Dnssd;
 
 namespace Dynamsoft.TwainDirect.Cloud.Support
 {
@@ -73,7 +74,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// context
         /// </summary>
         /// <param name="a_dnssddeviceinfo">the device we're talking to</param>
-        public ApiCmd(Dnssd.DnssdDeviceInfo a_dnssddeviceinfo)
+        public ApiCmd(DnssdDeviceInfo a_dnssddeviceinfo)
         {
             ApiCmdHelper(a_dnssddeviceinfo, null, null, null, null);
         }
@@ -88,8 +89,8 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// <param name="a_objectWaitforeventprocessingcallback">object to pass to the callback</param>
         public ApiCmd
         (
-            Dnssd.DnssdDeviceInfo a_dnssddeviceinfo,
-            TwainLocalScanner.WaitForEventsProcessingCallback a_waitforeventprocessingcallback,
+            DnssdDeviceInfo a_dnssddeviceinfo,
+            TwainScannerBase.WaitForEventsProcessingCallback a_waitforeventprocessingcallback,
             object a_objectWaitforeventprocessingcallback
         )
         {
@@ -162,7 +163,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// <param name="a_httplistenercontext">the object that delivered the command</param>
         public ApiCmd
         (
-            Dnssd.DnssdDeviceInfo a_dnssddeviceinfo,
+            DnssdDeviceInfo a_dnssddeviceinfo,
             JsonLookup a_jsonlookup,
             ref HttpListenerContextBase a_httplistenercontext
         )
@@ -241,7 +242,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// Return what we know about the scanner we're talking to
         /// </summary>
         /// <returns>a point to the device info</returns>
-        public Dnssd.DnssdDeviceInfo GetDnssdDeviceInfo()
+        public DnssdDeviceInfo GetDnssdDeviceInfo()
         {
             return (m_dnssddeviceinfo);
         }
@@ -2646,10 +2647,10 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// <param name="a_objectWaitforeventprocessingcallback">object to pass to the callback</param>
         public void ApiCmdHelper
         (
-            Dnssd.DnssdDeviceInfo a_dnssddeviceinfo,
+            DnssdDeviceInfo a_dnssddeviceinfo,
             JsonLookup a_jsonlookup,
             HttpListenerContextBase a_httplistenercontext,
-            TwainLocalScanner.WaitForEventsProcessingCallback a_waitforeventprocessingcallback,
+            TwainScannerBase.WaitForEventsProcessingCallback a_waitforeventprocessingcallback,
             object a_objectWaitforeventprocessingcallback
         )
         {
@@ -3091,7 +3092,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         #region Private Attributes...
 
         // Information about the device we're communicating with...
-        private Dnssd.DnssdDeviceInfo m_dnssddeviceinfo;
+        private DnssdDeviceInfo m_dnssddeviceinfo;
 
         /// <summary>
         /// Data for the listener used by TwainDirect.Scanner...
@@ -3115,7 +3116,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         private SessionData m_sessiondata;
 
         // The callback and its object for the waitForEvents command...
-        TwainLocalScanner.WaitForEventsProcessingCallback m_waitforeventprocessingcallback;
+        TwainScannerBase.WaitForEventsProcessingCallback m_waitforeventprocessingcallback;
         object m_objectWaitforeventprocessingcallback;
 
         /// <summary>

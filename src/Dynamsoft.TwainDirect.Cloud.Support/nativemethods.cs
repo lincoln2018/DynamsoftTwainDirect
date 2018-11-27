@@ -77,8 +77,6 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         [DllImport("kernel32.dll")]
 
         internal static extern int GetCurrentThreadId();
-        // Message sent to the Window when a Bonjour event occurs.
-        public const int BONJOUR_EVENT = (0x8000 + 0x100); // WM_USER
 
         [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void free(IntPtr ptr);

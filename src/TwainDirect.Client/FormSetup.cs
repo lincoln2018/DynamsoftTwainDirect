@@ -64,7 +64,7 @@ namespace TwainDirect.Client
         public FormSetup
         (
             DnssdDeviceInfo a_dnssddeviceinfo,
-            TwainLocalScannerClient a_twainlocalscannerclient,
+            TwainCloudScannerClient a_twainlocalscannerclient,
             string a_szWriteFolder,
             ResourceManager a_resourcemanager
         )
@@ -413,12 +413,11 @@ namespace TwainDirect.Client
         {
             bool blSuccess;
             long lJsonErrorIndex = 0;
-            ApiCmd apicmd;
+            ApiCmd apicmd = null;
             JsonLookup jsonlookup;
 
             // Issue the command...
-            apicmd = new ApiCmd(m_dnssddeviceinfo);
-            m_twainlocalscannerclient.ClientScannerSendTask("{\"actions\":[{\"action\":\"encryptionReport\"}]}", ref apicmd);
+            m_twainlocalscannerclient.ClientScannerSendTask("{\"actions\":[{\"action\":\"encryptionReport\"}]}", m_dnssddeviceinfo, out apicmd);
             blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerSendTask", ref apicmd);
             if (!blSuccess)
             {
@@ -525,7 +524,7 @@ namespace TwainDirect.Client
         /// <summary>
         /// So we can pick a new images folder...
         /// </summary>
-        private TwainLocalScannerClient m_twainlocalscannerclient;
+        private TwainCloudScannerClient m_twainlocalscannerclient;
 
         /// <summary>
         /// The device we're talking to...

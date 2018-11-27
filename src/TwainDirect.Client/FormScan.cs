@@ -149,14 +149,14 @@ namespace TwainDirect.Client
             InitImage();
 
             // Init our buttons...
-            SetButtons(EBUTTONSTATE.CLOSED);
+            SetButtons(EBUTTONSTATE.UNDEFINED);
 
             // Clear the picture boxes...
             LoadImage(ref m_pictureboxImage1, ref m_graphics1, ref m_bitmapGraphic1, null, "");
             LoadImage(ref m_pictureboxImage2, ref m_graphics2, ref m_bitmapGraphic2, null, "");
 
             // Get our TWAIN Local interface.
-            m_twainlocalscannerclient = new TwainLocalScannerClient(EventCallback, this, false);
+            m_twainCloudScannerClient = new TwainCloudScannerClient(EventCallback, this, false);
 
             // Is PDF/raster happy and healthy?
             PdfRaster pdfraster = new PdfRaster();
@@ -290,7 +290,7 @@ namespace TwainDirect.Client
             // not checking it with all the other stuff.  Inatead, we're going
             // to catch it at the very end to explain what's happened...
             string szDetected;
-            if (!m_twainlocalscannerclient.ClientGetSessionStatusSuccess(out szDetected))
+            if (!m_twainCloudScannerClient.ClientGetSessionStatusSuccess(out szDetected))
             {
                 long lJsonErrorIndex;
                 JsonLookup jsonlookup = new JsonLookup();
@@ -371,8 +371,8 @@ namespace TwainDirect.Client
             // dialog, so when we get here there's nothing left to do...
 
             // Send the task to the scanner... 
-            m_twainlocalscannerclient.ClientScannerSendTask(m_formsetup.GetTask(), ref apicmd);
-            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerSendTask", ref apicmd);
+            m_twainCloudScannerClient.ClientScannerSendTask(m_formsetup.GetTask(), m_dnssddeviceinfo, out apicmd);
+            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerSendTask", ref apicmd);
             if (!blSuccess)
             {
                 a_apicmd = apicmd;
@@ -386,8 +386,8 @@ namespace TwainDirect.Client
             }
 
             // Start capturing...
-            m_twainlocalscannerclient.ClientScannerStartCapturing(ref apicmd);
-            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStartCapturing", ref apicmd);
+            m_twainCloudScannerClient.ClientScannerStartCapturing(m_dnssddeviceinfo, out apicmd);
+            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStartCapturing", ref apicmd);
             if (!blSuccess)
             {
                 a_apicmd = apicmd;
@@ -405,7 +405,7 @@ namespace TwainDirect.Client
             {
                 // Scoot if the scanner says it's done sending images, or if
                 // we've received a failure status...
-                if (m_blAbortCapturing || !blSuccess || m_twainlocalscannerclient.ClientGetImageBlocksDrained())
+                if (m_blAbortCapturing || !blSuccess || m_twainCloudScannerClient.ClientGetImageBlocksDrained())
                 {
                     Log.Info("ClientScanSerial: break on abort, not success, or drained...");
                     break;
@@ -419,7 +419,7 @@ namespace TwainDirect.Client
                     // Wait for the session object to be updated.  If this command
                     // returns false, it means that somebody wants us to stop
                     // scanning...
-                    blSuccess = m_twainlocalscannerclient.ClientWaitForSessionUpdate(long.MaxValue);
+                    blSuccess = m_twainCloudScannerClient.ClientWaitForSessionUpdate(long.MaxValue);
                     if (m_blAbortCapturing)
                     {
                         Log.Info("ClientScanSerial: break on abort...");
@@ -432,8 +432,8 @@ namespace TwainDirect.Client
                         {
                             // If this doesn't work, then abort...
                             blStopCapturing = false;
-                            m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                            m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                             if (!blSuccess)
                             {
                                 m_blAbortCapturing = true;
@@ -459,8 +459,8 @@ namespace TwainDirect.Client
                     }
 
                     // If we have an imageBlock pop out, we're going to transfer it...
-                    alImageBlocks = m_twainlocalscannerclient.ClientGetImageBlocks();
-                    if (m_twainlocalscannerclient.ClientGetImageBlocksDrained() || ((alImageBlocks != null) && (alImageBlocks.Length > 0)))
+                    alImageBlocks = m_twainCloudScannerClient.ClientGetImageBlocks();
+                    if (m_twainCloudScannerClient.ClientGetImageBlocksDrained() || ((alImageBlocks != null) && (alImageBlocks.Length > 0)))
                     {
                         break;
                     }
@@ -468,7 +468,7 @@ namespace TwainDirect.Client
 
                 // Scoot if the scanner says it's done sending images, or if
                 // we've received a failure status...
-                if (m_blAbortCapturing || !blSuccess || m_twainlocalscannerclient.ClientGetImageBlocksDrained())
+                if (m_blAbortCapturing || !blSuccess || m_twainCloudScannerClient.ClientGetImageBlocksDrained())
                 {
                     Log.Info("ClientScan: break on abort, not success, or drained (2)...");
                     break;
@@ -489,8 +489,8 @@ namespace TwainDirect.Client
                     // reported, such as the imageNumber, imagePart, and moreParts...
                     if (!a_blGetMetadataWithImage)
                     {
-                        m_twainlocalscannerclient.ClientScannerReadImageBlockMetadata(alImageBlocks[0], a_blGetThumbnails, ref apicmd);
-                        blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReadImageBlockMetadata", ref apicmd);
+                        m_twainCloudScannerClient.ClientScannerReadImageBlockMetadata(alImageBlocks[0], a_blGetThumbnails, m_dnssddeviceinfo, ref apicmd);
+                        blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReadImageBlockMetadata", ref apicmd);
                         if (m_blAbortCapturing)
                         {
                             break;
@@ -502,8 +502,8 @@ namespace TwainDirect.Client
                             {
                                 // If this doesn't work, then abort...
                                 blStopCapturing = false;
-                                m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                                blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                                m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                                blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                                 if (!blSuccess)
                                 {
                                     m_blAbortCapturing = true;
@@ -529,8 +529,8 @@ namespace TwainDirect.Client
                     }
 
                     // Get the corresponding image block in the array...
-                    m_twainlocalscannerclient.ClientScannerReadImageBlock(alImageBlocks[0], a_blGetMetadataWithImage, ImageBlockCallback, ref apicmd);
-                    blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReadImageBlock", ref apicmd);
+                    m_twainCloudScannerClient.ClientScannerReadImageBlock(alImageBlocks[0], a_blGetMetadataWithImage, ImageBlockCallback, m_dnssddeviceinfo, ref apicmd);
+                    blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReadImageBlock", ref apicmd);
                     if (m_blAbortCapturing)
                     {
                         break;
@@ -542,8 +542,8 @@ namespace TwainDirect.Client
                         {
                             // If this doesn't work, then abort...
                             blStopCapturing = false;
-                            m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                            m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                             if (!blSuccess)
                             {
                                 m_blAbortCapturing = true;
@@ -568,8 +568,8 @@ namespace TwainDirect.Client
                     }
 
                     // Release the image block...
-                    m_twainlocalscannerclient.ClientScannerReleaseImageBlocks(alImageBlocks[0], alImageBlocks[0], ref apicmd);
-                    blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref apicmd);
+                    m_twainCloudScannerClient.ClientScannerReleaseImageBlocks(alImageBlocks[0], alImageBlocks[0], m_dnssddeviceinfo, ref apicmd);
+                    blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref apicmd);
                     if (m_blAbortCapturing)
                     {
                         break;
@@ -581,8 +581,8 @@ namespace TwainDirect.Client
                         {
                             // If this doesn't work, then abort...
                             blStopCapturing = false;
-                            m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                            m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                             if (!blSuccess)
                             {
                                 m_blAbortCapturing = true;
@@ -607,7 +607,7 @@ namespace TwainDirect.Client
                     }
 
                     // If we're out of imageBlocks, exit this loop...
-                    alImageBlocks = m_twainlocalscannerclient.ClientGetImageBlocks();
+                    alImageBlocks = m_twainCloudScannerClient.ClientGetImageBlocks();
                     if ((alImageBlocks == null) || (alImageBlocks.Length == 0))
                     {
                         break;
@@ -618,8 +618,8 @@ namespace TwainDirect.Client
             // Stop capturing...
             if (blStopCapturing)
             {
-                m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                 if (!blSuccess)
                 {
                     if (blSuccessClientScan)
@@ -633,28 +633,28 @@ namespace TwainDirect.Client
 
             // As long as we're in the capturing or draining states, we need to
             // keep releasing images.
-            while (   (m_twainlocalscannerclient.ClientGetSessionState() == "capturing")
-                   || (m_twainlocalscannerclient.ClientGetSessionState() == "draining"))
+            while (   (m_twainCloudScannerClient.ClientGetSessionState() == "capturing")
+                   || (m_twainCloudScannerClient.ClientGetSessionState() == "draining"))
             {
                 // If we're drained, we can scoot, this handles stopCapturing,
                 // which isn't going to close the session...
-                if (m_twainlocalscannerclient.ClientGetImageBlocksDrained())
+                if (m_twainCloudScannerClient.ClientGetImageBlocksDrained())
                 {
                     break;
                 }
 
                 // Do we have anything to release?
-                alImageBlocks = m_twainlocalscannerclient.ClientGetImageBlocks();
+                alImageBlocks = m_twainCloudScannerClient.ClientGetImageBlocks();
                 if ((alImageBlocks == null) || (alImageBlocks.Length == 0))
                 {
                     Thread.Sleep(100);
-                    m_twainlocalscannerclient.ClientScannerGetSession(ref apicmd);
+                    m_twainCloudScannerClient.ClientScannerGetSession(m_dnssddeviceinfo, out apicmd);
                     continue;
                 }
 
                 // Release them...
-                m_twainlocalscannerclient.ClientScannerReleaseImageBlocks(alImageBlocks[0], alImageBlocks[alImageBlocks.Length - 1], ref apicmd);
-                blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref apicmd);
+                m_twainCloudScannerClient.ClientScannerReleaseImageBlocks(alImageBlocks[0], alImageBlocks[alImageBlocks.Length - 1], m_dnssddeviceinfo, ref apicmd);
+                blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref apicmd);
                 if (!blSuccess)
                 {
                     if (blSuccessClientScan)
@@ -717,21 +717,21 @@ namespace TwainDirect.Client
             // reported, such as the imageNumber, imagePart, and moreParts...
             if (!clientscanparallelhelper.m_blGetMetadataWithImage)
             {
-                m_twainlocalscannerclient.ClientScannerReadImageBlockMetadata(clientscanparallelhelper.m_lImageBlock, clientscanparallelhelper.m_blGetThumbnails, ref clientscanparallelhelper.m_apicmd);
-                blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReadImageBlockMetadata", ref clientscanparallelhelper.m_apicmd);
+                m_twainCloudScannerClient.ClientScannerReadImageBlockMetadata(clientscanparallelhelper.m_lImageBlock, clientscanparallelhelper.m_blGetThumbnails, m_dnssddeviceinfo, ref clientscanparallelhelper.m_apicmd);
+                blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReadImageBlockMetadata", ref clientscanparallelhelper.m_apicmd);
             }
 
             // Get the corresponding image block in the array...
-            m_twainlocalscannerclient.ClientScannerReadImageBlock(clientscanparallelhelper.m_lImageBlock, clientscanparallelhelper.m_blGetMetadataWithImage, ImageBlockCallback, ref clientscanparallelhelper.m_apicmd);
-            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReadImageBlock", ref clientscanparallelhelper.m_apicmd);
+            m_twainCloudScannerClient.ClientScannerReadImageBlock(clientscanparallelhelper.m_lImageBlock, clientscanparallelhelper.m_blGetMetadataWithImage, ImageBlockCallback, m_dnssddeviceinfo, ref clientscanparallelhelper.m_apicmd);
+            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReadImageBlock", ref clientscanparallelhelper.m_apicmd);
             if (!blSuccess)
             {
                 return;
             }
 
             // Release the image block...
-            m_twainlocalscannerclient.ClientScannerReleaseImageBlocks(clientscanparallelhelper.m_lImageBlock, clientscanparallelhelper.m_lImageBlock, ref clientscanparallelhelper.m_apicmd);
-            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref clientscanparallelhelper.m_apicmd);
+            m_twainCloudScannerClient.ClientScannerReleaseImageBlocks(clientscanparallelhelper.m_lImageBlock, clientscanparallelhelper.m_lImageBlock, m_dnssddeviceinfo, ref clientscanparallelhelper.m_apicmd);
+            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref clientscanparallelhelper.m_apicmd);
         }
 
         /// <summary>
@@ -761,7 +761,7 @@ namespace TwainDirect.Client
             bool blStopCapturing;
             List<long> listlImageBlocksWithThreads;
             long[] alImageBlocks;
-            ApiCmd apicmd;
+            ApiCmd apicmd = null;
             List<Thread> listThreadsToRemove;
 
             // Init stuff...
@@ -774,7 +774,6 @@ namespace TwainDirect.Client
             // need a bait-and-switch scheme that starts with making an object that
             // we'll return and then replace, if needed...
             a_apicmd = null; // it'll never be null, but the compiler needs comforting...
-            apicmd = new ApiCmd(m_dnssddeviceinfo);
             blSuccessClientScan = true;
 
             // Clear the picture boxes, make sure we start with the left box...
@@ -787,8 +786,8 @@ namespace TwainDirect.Client
             // dialog, so when we get here there's nothing left to do...
 
             // Send the task to the scanner... 
-            m_twainlocalscannerclient.ClientScannerSendTask(m_formsetup.GetTask(), ref apicmd);
-            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerSendTask", ref apicmd);
+            m_twainCloudScannerClient.ClientScannerSendTask(m_formsetup.GetTask(), this.m_dnssddeviceinfo, out apicmd);
+            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerSendTask", ref apicmd);
             if (!blSuccess)
             {
                 a_apicmd = apicmd;
@@ -802,8 +801,8 @@ namespace TwainDirect.Client
             }
 
             // Start capturing...
-            m_twainlocalscannerclient.ClientScannerStartCapturing(ref apicmd);
-            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStartCapturing", ref apicmd);
+            m_twainCloudScannerClient.ClientScannerStartCapturing(m_dnssddeviceinfo, out apicmd);
+            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStartCapturing", ref apicmd);
             if (!blSuccess)
             {
                 a_apicmd = apicmd;
@@ -821,7 +820,7 @@ namespace TwainDirect.Client
             {
                 // Scoot if the scanner says it's done sending images, or if
                 // we've received a failure status...
-                if (m_blAbortCapturing || !blSuccess || m_twainlocalscannerclient.ClientGetImageBlocksDrained())
+                if (m_blAbortCapturing || !blSuccess || m_twainCloudScannerClient.ClientGetImageBlocksDrained())
                 {
                     Log.Info("ClientScanParallel: break on abort, not success, or drained...");
                     break;
@@ -835,7 +834,7 @@ namespace TwainDirect.Client
                     // Wait for the session object to be updated.  If this command
                     // returns false, it means that somebody wants us to stop
                     // scanning...
-                    blSuccess = m_twainlocalscannerclient.ClientWaitForSessionUpdate(long.MaxValue);
+                    blSuccess = m_twainCloudScannerClient.ClientWaitForSessionUpdate(long.MaxValue);
                     if (m_blAbortCapturing)
                     {
                         Log.Info("ClientScanParallel: break on abort...");
@@ -848,8 +847,8 @@ namespace TwainDirect.Client
                         {
                             // If this doesn't work, then abort...
                             blStopCapturing = false;
-                            m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                            blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                            m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                            blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                             if (!blSuccess)
                             {
                                 m_blAbortCapturing = true;
@@ -875,8 +874,8 @@ namespace TwainDirect.Client
                     }
 
                     // If we have an imageBlock pop out, we're going to transfer it...
-                    alImageBlocks = m_twainlocalscannerclient.ClientGetImageBlocks();
-                    if (m_twainlocalscannerclient.ClientGetImageBlocksDrained() || ((alImageBlocks != null) && (alImageBlocks.Length > 0)))
+                    alImageBlocks = m_twainCloudScannerClient.ClientGetImageBlocks();
+                    if (m_twainCloudScannerClient.ClientGetImageBlocksDrained() || ((alImageBlocks != null) && (alImageBlocks.Length > 0)))
                     {
                         break;
                     }
@@ -884,7 +883,7 @@ namespace TwainDirect.Client
 
                 // Scoot if the scanner says it's done sending images, or if
                 // we've received a failure status...
-                if (m_blAbortCapturing || !blSuccess || m_twainlocalscannerclient.ClientGetImageBlocksDrained())
+                if (m_blAbortCapturing || !blSuccess || m_twainCloudScannerClient.ClientGetImageBlocksDrained())
                 {
                     Log.Info("ClientScanParallel: break on abort, not success, or drained (2)...");
                     break;
@@ -925,8 +924,8 @@ namespace TwainDirect.Client
             // Stop capturing...
             if (blStopCapturing)
             {
-                m_twainlocalscannerclient.ClientScannerStopCapturing(ref apicmd);
-                blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
+                m_twainCloudScannerClient.ClientScannerStopCapturing(m_dnssddeviceinfo, out apicmd);
+                blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerStopCapturing", ref apicmd);
                 if (!blSuccess)
                 {
                     if (blSuccessClientScan)
@@ -958,28 +957,28 @@ namespace TwainDirect.Client
 
             // As long as we're in the capturing or draining states, we need to
             // keep releasing images.
-            while (     (m_twainlocalscannerclient.ClientGetSessionState() == "capturing")
-                   ||   (m_twainlocalscannerclient.ClientGetSessionState() == "draining"))
+            while (     (m_twainCloudScannerClient.ClientGetSessionState() == "capturing")
+                   ||   (m_twainCloudScannerClient.ClientGetSessionState() == "draining"))
             {
                 // If we're drained, we can scoot, this handles stopCapturing,
                 // which isn't going to close the session...
-                if (m_twainlocalscannerclient.ClientGetImageBlocksDrained())
+                if (m_twainCloudScannerClient.ClientGetImageBlocksDrained())
                 {
                     break;
                 }
 
                 // Do we have anything to release?
-                alImageBlocks = m_twainlocalscannerclient.ClientGetImageBlocks();
+                alImageBlocks = m_twainCloudScannerClient.ClientGetImageBlocks();
                 if ((alImageBlocks == null) || (alImageBlocks.Length == 0))
                 {
                     Thread.Sleep(100);
-                    m_twainlocalscannerclient.ClientScannerGetSession(ref apicmd);
+                    m_twainCloudScannerClient.ClientScannerGetSession(m_dnssddeviceinfo, out apicmd);
                     continue;
                 }
 
                 // Release them...
-                m_twainlocalscannerclient.ClientScannerReleaseImageBlocks(alImageBlocks[0], alImageBlocks[alImageBlocks.Length - 1], ref apicmd);
-                blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref apicmd);
+                m_twainCloudScannerClient.ClientScannerReleaseImageBlocks(alImageBlocks[0], alImageBlocks[alImageBlocks.Length - 1], this.m_dnssddeviceinfo, ref apicmd);
+                blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerReleaseImageBlocks", ref apicmd);
                 if (!blSuccess)
                 {
                     if (blSuccessClientScan)
@@ -1043,7 +1042,7 @@ namespace TwainDirect.Client
         private void Critical()
         {
             SetButtons(EBUTTONSTATE.UNDEFINED);
-            m_twainlocalscannerclient.ClientCertificationTwainLocalSessionDestroy(true);
+            m_twainCloudScannerClient.ClientCertificationTwainLocalSessionDestroy(true);
             if (m_threadClientScan != null)
             {
                 m_threadClientScan.Abort();
@@ -1098,7 +1097,7 @@ namespace TwainDirect.Client
         private void SessionTimedOut()
         {
             SetButtons(EBUTTONSTATE.UNDEFINED);
-            m_twainlocalscannerclient.ClientCertificationTwainLocalSessionDestroy(true);
+            m_twainCloudScannerClient.ClientCertificationTwainLocalSessionDestroy(true);
             MessageBox.Show(Config.GetResource(m_resourcemanager, "errSessionTimeout"), Config.GetResource(m_resourcemanager, "strFormScanTitle"));
             SetButtons(EBUTTONSTATE.CLOSED);
         }
@@ -1211,10 +1210,10 @@ namespace TwainDirect.Client
             m_buttonClose_Click(sender, e);
 
             // More cleanup...
-            if (m_twainlocalscannerclient != null)
+            if (m_twainCloudScannerClient != null)
             {
-                m_twainlocalscannerclient.Dispose();
-                m_twainlocalscannerclient = null;
+                m_twainCloudScannerClient.Dispose();
+                m_twainCloudScannerClient = null;
             }
 
             // Close the log...
@@ -1326,7 +1325,7 @@ namespace TwainDirect.Client
             // This function creates a finished image, metadata, and thumbnail
             // from the imageBlocks...
             szBasename = Path.Combine(Path.Combine(m_szWriteFolder, "images"), "img" + a_lImageBlockNum.ToString("D6"));
-            if (!m_twainlocalscannerclient.ClientFinishImage(szBasename, out szFinishedImageBasename))
+            if (!m_twainCloudScannerClient.ClientFinishImage(szBasename, out szFinishedImageBasename))
             {
                 // We don't have a complete image, so scoot...
                 return (blGotImage);
@@ -1516,9 +1515,17 @@ namespace TwainDirect.Client
 
             // Override...
             ebuttonstate = a_ebuttonstate;
-            if ((m_twainlocalscannerclient != null) && (m_twainlocalscannerclient.GetState() == "noSession"))
-            {
-                ebuttonstate = EBUTTONSTATE.CLOSED;
+
+            if (m_twainCloudScannerClient != null) {
+
+                if (!m_twainCloudScannerClient.isCloudValid())
+                {
+                    ebuttonstate = EBUTTONSTATE.UNDEFINED;
+                }
+                else if (m_twainCloudScannerClient.GetState() == "noSession")
+                {
+                    ebuttonstate = EBUTTONSTATE.CLOSED;
+                }
             }
 
             // Fix the buttons...
@@ -1730,7 +1737,7 @@ namespace TwainDirect.Client
         private void m_buttonClose_Click(object sender, EventArgs e)
         {
             bool blSuccess;
-            ApiCmd apicmd = new ApiCmd(m_dnssddeviceinfo);
+            ApiCmd apicmd = null;
 
             // Buttons off...
             SetButtons(EBUTTONSTATE.UNDEFINED);
@@ -1740,9 +1747,9 @@ namespace TwainDirect.Client
             {
                 // Ask it to stop...
                 m_blAbortCapturing = true;
-                if (m_twainlocalscannerclient != null)
+                if (m_twainCloudScannerClient != null)
                 {
-                    m_twainlocalscannerclient.ClientWaitForSessionUpdateForceSet();
+                    m_twainCloudScannerClient.ClientWaitForSessionUpdateForceSet();
                 }
 
                 // Give it ten seconds to comply...
@@ -1774,12 +1781,12 @@ namespace TwainDirect.Client
             }
 
             // Close session, if needed...
-            if ((m_twainlocalscannerclient != null) && (m_twainlocalscannerclient.ClientGetSessionState() != "noSession"))
+            if ((m_twainCloudScannerClient != null) && (m_twainCloudScannerClient.ClientGetSessionState() != "noSession"))
             {
-                blSuccess = m_twainlocalscannerclient.ClientScannerCloseSession(ref apicmd);
-                if (blSuccess)
+                CloudResponse ret = m_twainCloudScannerClient.ClientScannerCloseSession(this.m_dnssddeviceinfo, out apicmd);
+                if (ret.blSuccess)
                 {
-                    blSuccess = m_twainlocalscannerclient.ClientCheckForApiErrors("ClientScannerCloseSession", ref apicmd);
+                    blSuccess = m_twainCloudScannerClient.ClientCheckForApiErrors("ClientScannerCloseSession", ref apicmd);
                     if (!blSuccess)
                     {
                         string[] aszDescriptions = apicmd.GetApiErrorDescriptions();
@@ -1818,10 +1825,15 @@ namespace TwainDirect.Client
             // Buttons off...
             SetButtons(EBUTTONSTATE.UNDEFINED);
 
+            if (m_twainCloudScannerClient == null || !m_twainCloudScannerClient.isCloudValid()) {
+                MessageBox.Show("Please click Login...");
+                return;
+            }
+
             // Instantiate our selection form with the list of devices, and
             // wait for the user to pick something...
             dialogresult = DialogResult.Cancel;
-            formselect = new FormSelect(null, m_fScale, _cloudTokens, out blSuccess, m_resourcemanager);
+            formselect = new FormSelect(null, m_fScale, m_twainCloudScannerClient.GetCloudClient(), out blSuccess, m_resourcemanager);
             if (!blSuccess)
             {
                 SetButtons(EBUTTONSTATE.CLOSED);
@@ -1878,9 +1890,9 @@ namespace TwainDirect.Client
         private void m_buttonStop_Click(object sender, EventArgs e)
         {
             m_blStopCapturing = true;
-            if (m_twainlocalscannerclient != null)
+            if (m_twainCloudScannerClient != null)
             {
-                m_twainlocalscannerclient.ClientWaitForSessionUpdateForceSet();
+                m_twainCloudScannerClient.ClientWaitForSessionUpdateForceSet();
             }
         }
 
@@ -2131,15 +2143,14 @@ namespace TwainDirect.Client
         /// </summary>
         private void OpenScanner()
         {
-            bool blSuccess;
-            ApiCmd apicmd;
+            ApiCmd apicmd = null;
 
             // Create a command context...
             apicmd = new ApiCmd(m_dnssddeviceinfo);
 
             // We need this to get the x-privet-token...
-            blSuccess = m_twainlocalscannerclient.ClientInfo(ref apicmd);
-            if (!blSuccess)
+            CloudResponse ret = m_twainCloudScannerClient.ClientInfo(m_dnssddeviceinfo, out apicmd);
+            if (!ret.blSuccess)
             {
                 Log.Error("ClientInfo failed: " + apicmd.GetHttpResponseData());
                 MessageBox.Show(ReportError("infoex", apicmd.GetHttpResponseData()), Config.GetResource(m_resourcemanager, "strFormScanTitle"));
@@ -2149,8 +2160,9 @@ namespace TwainDirect.Client
 
             // Create session...
             apicmd = new ApiCmd(m_dnssddeviceinfo);
-            blSuccess = m_twainlocalscannerclient.ClientScannerCreateSession(ref apicmd);
-            if (!blSuccess)
+
+            ret = m_twainCloudScannerClient.ClientScannerCreateSession(m_dnssddeviceinfo, out apicmd);
+            if (!ret.blSuccess)
             {
                 Log.Error("ClientScannerCreateSession failed: " + apicmd.GetHttpResponseData());
                 MessageBox.Show(ReportError("createSession", apicmd.GetHttpResponseData()), Config.GetResource(m_resourcemanager, "strFormScanTitle"));
@@ -2180,8 +2192,8 @@ namespace TwainDirect.Client
             apicmd = new ApiCmd(m_dnssddeviceinfo);
 
             // Wait for events...
-            blSuccess = m_twainlocalscannerclient.ClientScannerWaitForEvents(ref apicmd);
-            if (!blSuccess)
+            ret = m_twainCloudScannerClient.ClientScannerWaitForEvents(m_dnssddeviceinfo, out apicmd);
+            if (!ret.blSuccess)
             {
                 // Log it, but stay open...
                 Log.Error("ClientScannerWaitForEvents failed: " + apicmd.GetHttpResponseData());
@@ -2192,7 +2204,7 @@ namespace TwainDirect.Client
             Text = "TWAIN Direct: Application (" + m_dnssddeviceinfo.GetLinkLocal() + ")";
 
             // Create the setup form...
-            m_formsetup = new FormSetup(m_dnssddeviceinfo, m_twainlocalscannerclient, m_szWriteFolder, m_resourcemanager);
+            m_formsetup = new FormSetup(m_dnssddeviceinfo, m_twainCloudScannerClient, m_szWriteFolder, m_resourcemanager);
 
             // Clear the images folder...
             bool blWarnOnce = true;
@@ -2232,26 +2244,26 @@ namespace TwainDirect.Client
         /// </summary>
         void UpdateSummary()
         {
-            if (m_twainlocalscannerclient != null)
+            if (m_twainCloudScannerClient != null)
             {
                 if (m_formsetup != null)
                 {
-                    if (m_twainlocalscannerclient.GetState() != "noSession")
+                    if (m_twainCloudScannerClient.GetState() != "noSession")
                     {
                         m_textboxSummary.Text =
-                            "state=" + m_twainlocalscannerclient.GetState() +
+                            "state=" + m_twainCloudScannerClient.GetState() +
                             "; task='" + m_formsetup.GetTaskName() + "'" +
                             "; getthumbnails=" + m_formsetup.GetThumbnails().ToString().ToLowerInvariant() +
                             "; getmetadatawithimage=" + m_formsetup.GetMetadataWithImage().ToString().ToLowerInvariant();
                     }
                     else
                     {
-                        m_textboxSummary.Text = "state=" + m_twainlocalscannerclient.GetState();
+                        m_textboxSummary.Text = "state=" + m_twainCloudScannerClient.GetState();
                     }
                 }
                 else
                 {
-                    m_textboxSummary.Text = "state=" + m_twainlocalscannerclient.GetState();
+                    m_textboxSummary.Text = "state=" + m_twainCloudScannerClient.GetState();
                 }
             }
             else
@@ -2319,7 +2331,7 @@ namespace TwainDirect.Client
         /// <summary>
         /// Our TWAIN Local interface to the scanning api...
         /// </summary>
-        private TwainLocalScannerClient m_twainlocalscannerclient;
+        private TwainCloudScannerClient m_twainCloudScannerClient;
 
         /// <summary>
         /// The thread we'll scan in, so that our UI remains
@@ -2382,22 +2394,21 @@ namespace TwainDirect.Client
         private Brush m_brushBackground;
         private Rectangle m_rectangleBackground;
         private int m_iUseBitmap;
-        private TwainCloudTokens _cloudTokens;
 
         // Where we get our localized strings...
         ResourceManager m_resourcemanager;
 
         #endregion
 
-        private void cloudButton_Click(object sender, EventArgs e)
+        private void cloudLogin_Click(object sender, EventArgs e)
         {
-            int menuPosition = cloudButton.Height;
-            Point screenPoint = PointToScreen(new Point(cloudButton.Left, cloudButton.Bottom));
+            int menuPosition = cloudLogin.Height;
+            Point screenPoint = PointToScreen(new Point(cloudLogin.Left, cloudLogin.Bottom));
 
             if (screenPoint.Y + cloudMenuStrip.Size.Height > Screen.PrimaryScreen.WorkingArea.Height)
                 menuPosition = -cloudMenuStrip.Size.Height;
 
-            cloudMenuStrip.Show(cloudButton, new Point(0, menuPosition));
+            cloudMenuStrip.Show(cloudLogin, new Point(0, menuPosition));
         }
 
         private void loginToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2411,27 +2422,24 @@ namespace TwainDirect.Client
             {
                 loginForm.Close();
 
-                _cloudTokens = args.Tokens;
+                var _cloudClient = new TwainCloudClient(apiRoot, args.Tokens);
 
-                var client = new TwainCloudClient(apiRoot, _cloudTokens);
-
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 3; i++) {
 
                     try
                     {
-                        await m_twainlocalscannerclient.ConnectToCloud(client);
+                        await m_twainCloudScannerClient.ConnectToCloud(_cloudClient);
+                        m_twainCloudScannerClient.SetToken(args.Tokens.AuthorizationToken);
+
                         break;
                     }
                     catch (Exception e3)
                     {
+                        m_twainCloudScannerClient.SetCloudClient(null);
                         Log.Error(e3.Message);
                         Thread.Sleep(1000);
                     }
                 }
-
-                m_twainlocalscannerclient.m_dictionaryExtraHeaders.Remove("Authorization");
-                m_twainlocalscannerclient.m_dictionaryExtraHeaders.Add("Authorization", args.Tokens.AuthorizationToken);
-
             };
 
             loginForm.ShowDialog(this);

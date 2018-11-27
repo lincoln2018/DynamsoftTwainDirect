@@ -150,6 +150,8 @@ namespace TwainDirect.OnTwain
             int iPid = 0;
             string szTaskFile;
             string szImagesFolder;
+            string szIpc;
+
 
             // Check the arguments...
             string szWriteFolder = Config.Get("writeFolder", null);
@@ -160,8 +162,38 @@ namespace TwainDirect.OnTwain
             {
                 szImagesFolder = Path.Combine(szWriteFolder, "images");
             }
-            iPid = int.Parse(Config.Get("parentpid", "0"));
+            szIpc = Config.Get("ipc", null);
 
+            iPid = int.Parse(Config.Get("parentpid", "0"));
+            // Run in IPC mode.  The caller has set up a 'pipe' for us, so we'll use
+            // that to send commands back and forth.  This is the normal mode when
+            // we're running with a scanner...
+            if (szIpc != null)
+            {
+                // With Windows we need a window for the driver, but we can hide it...
+                if (TWAINCSToolkit.GetPlatform() == "WINDOWS")
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new FormTwain(szWriteFolder, szImagesFolder, szIpc, iPid, RunInUiThread));
+                    return true;
+                }
+
+                // Linux and Mac OS X are okay without a window...
+                else
+                {
+                    TwainLocalOnTwain twainlocalontwain;
+
+                    // Create our object...
+                    twainlocalontwain = new TwainLocalOnTwain(szWriteFolder, szImagesFolder, szIpc, iPid, null, null, IntPtr.Zero);
+
+                    // Run our object...
+                    twainlocalontwain.Run();
+
+                    // All done...
+                    return true;
+                }
+            }
 
             // Handle the TWAIN list, we use this during registration to find out
             // what drivers we can use, and collect some info about them...
