@@ -102,10 +102,31 @@ namespace MQTTnet.Client
                 {
                     await SendAsync(new MqttDisconnectPacket(), _cancellationTokenSource.Token).ConfigureAwait(false);
                 }
+
+                this.RemoveEvents(this.Connected);
+                this.RemoveEvents(this.Disconnected);
+                this.RemoveEvents(this.ApplicationMessageReceived);
+
             }
             finally
             {
                 await DisconnectInternalAsync(null, null).ConfigureAwait(false);
+            }
+        }
+
+        private void RemoveEvents<T>(EventHandler<T> evts)
+        {
+            Debug.WriteLine("RemoveEvents in MqttClient [Mqtt]");
+
+            if (evts == null)
+                return;
+
+            var list = evts.GetInvocationList();
+            foreach (var d in list)
+            {
+                object delObj = d.GetType().GetProperty("Method").GetValue(d, null);
+                string funcName = (string)delObj.GetType().GetProperty("Name").GetValue(delObj, null);
+                evts -= d as EventHandler<T>;
             }
         }
 
