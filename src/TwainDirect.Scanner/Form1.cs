@@ -723,8 +723,8 @@ namespace TwainDirect.Scanner
 
             if (m_scanner.IsTwainCloudStarted())
             {
-
-                Display("TWAIN Cloud is ready for use...");
+                
+                Display($"TWAIN Cloud is ready for use...{m_scanner.GetTwainCloudId()}");
             }
 
             // Set buttons...

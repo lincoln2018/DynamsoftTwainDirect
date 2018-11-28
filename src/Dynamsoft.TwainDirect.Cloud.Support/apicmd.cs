@@ -800,10 +800,10 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// Handle the response to our request
         /// </summary>
         /// <param name="a_iasyncresult"></param>
-        private static async void ResponseCallBackLaunchpad(IAsyncResult a_iasyncresult)
+        private static void ResponseCallBackLaunchpad(IAsyncResult a_iasyncresult)
         {
             ApiCmd apicmd = (ApiCmd)a_iasyncresult.AsyncState;
-            await apicmd.ResponseCallBack(a_iasyncresult);
+            apicmd.ResponseCallBack(a_iasyncresult);
         }
 
         /// <summary>
@@ -824,17 +824,8 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             m_applicationmanager = a_applicationManager;
         }
 
-        private static readonly ConcurrentDictionary<string, TaskCompletionSource<CloudDeviceResponse>> OutstandingCloudRequests = 
-            new ConcurrentDictionary<string, TaskCompletionSource<CloudDeviceResponse>>();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="requestId"></param>
-        public static void StartCloudRequest(string requestId)
-        {
-            OutstandingCloudRequests.TryAdd(requestId, new TaskCompletionSource<CloudDeviceResponse>());
-        }
+        private static readonly ConcurrentDictionary<string, TaskCompletionSource<string>> OutstandingCloudRequests = 
+            new ConcurrentDictionary<string, TaskCompletionSource<string>>();
 
         /// <summary>
         /// 
@@ -844,19 +835,45 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         {
             var cloudMessage = JsonConvert.DeserializeObject<CloudDeviceResponse>(body, CloudManager.SerializationSettings);
             var requestId = cloudMessage.RequestId;
-            TaskCompletionSource<CloudDeviceResponse> completionSource;
 
-            if (OutstandingCloudRequests.TryGetValue(requestId, out completionSource))
+            TaskCompletionSource<string> completionSource = null;
+
+            int maxTryTimes = 10;
+            bool bOK = false;
+            while (true) {
+                
+                bOK = ApiCmd.OutstandingCloudRequests.TryGetValue(requestId, out completionSource);
+                if (completionSource != null)
+                    break;
+
+                maxTryTimes--;
+                if (maxTryTimes < 0) {
+                    bOK = false;
+                    break;
+                }
+
+                Thread.Sleep(100);
+            }
+
+            if (bOK)
             {
-                Debug.WriteLine($"Completing cloud request: {requestId}");
+                Debug.WriteLine($"Completing cloud request: {requestId} \r\n {body}");
+
                 try
                 {
-                    completionSource.SetResult(cloudMessage);
+                    completionSource.TrySetResult(body);
                 }
-                catch(Exception e1)
+                catch (Exception e1)
                 {
-                    Debug.WriteLine($"Completing cloud request: {e1.Message}");
+                    Debug.WriteLine($"Completing cloud request error: {e1.Message}");
                 }
+                finally
+                {
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"Completing cloud request (TryGet timeout): {requestId} \r\n {body}");
             }
         }
 
@@ -864,25 +881,19 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<CloudDeviceResponse> WaitCloudResponse()
+        public string WaitCloudResponse(int waitMqttTimeout = 5000)
         {
-            TaskCompletionSource < CloudDeviceResponse > completionSource;
+            TaskCompletionSource<string> completionSource;
 
+            bool bGet = ApiCmd.OutstandingCloudRequests.TryGetValue(m_CloudRequestId, out completionSource);
 
-            const int timeoutMs = 10000;
-
-            if (OutstandingCloudRequests.TryGetValue(m_CloudRequestId, out completionSource))
+            if (bGet)
             {
                 Debug.WriteLine($"Waiting for cloud response: {m_CloudRequestId}");
 
-                //Timer timer = new Timer(_ => completionSource.TrySetResult(null),
-               //                         null, timeoutMs, Timeout.Infinite);
-
-                var response = await completionSource.Task;
-
-                //timer.Change(Timeout.Infinite, Timeout.Infinite);
-
-                return response;
+                completionSource.Task.Wait(waitMqttTimeout);
+                if(completionSource.Task.Status == TaskStatus.RanToCompletion)
+                    return completionSource.Task.Result;
             }
 
             return null;
@@ -892,7 +903,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// Handle the response to our request
         /// </summary>
         /// <param name="a_iasyncresult"></param>
-        private async Task ResponseCallBack(IAsyncResult a_iasyncresult)
+        private void ResponseCallBack(IAsyncResult a_iasyncresult)
         {
             bool blMultipart = false;
 
@@ -903,21 +914,23 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
 
                 if (m_dnssddeviceinfo.IsCloud())
                 {
-                    //WebResponse response = request.EndGetResponse(a_iasyncresult);
+                    int waitMqttTimeout = request.ReadWriteTimeout;
 
-                    var cloudResponse = await WaitCloudResponse();
+                    var cloudBody = WaitCloudResponse(waitMqttTimeout);
 
-                    Debug.WriteLine($"Wait completed, starting processing");
+                    Debug.WriteLine("Wait completed, starting processing.");
 
-                    if (cloudResponse == null)
+                    if (cloudBody == null)
                     {
-                        cloudResponse = new CloudDeviceResponse();
-                        cloudResponse.StatusCode = 600;
-                        cloudResponse.Body = "{}";
+                        CloudDeviceResponse cloudResponse1 = new CloudDeviceResponse();
+                        cloudResponse1.StatusCode = 600;
+                        cloudResponse1.Body = "{}";
                         WebResponse response = request.EndGetResponse(a_iasyncresult);
                         m_httprequestdata.autoreseteventHttpWebRequest.Set();
                         return;
                     }
+
+                    var cloudResponse = JsonConvert.DeserializeObject<CloudDeviceResponse>(cloudBody, CloudManager.SerializationSettings);
 
                     var headers = new NameValueCollection();
                     foreach(var pair in cloudResponse.Headers)
@@ -1996,18 +2009,15 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             // We're async, but we wait here for the response...
             try
             {
-                // Handle TWAIN Cloud...
-                if (m_dnssddeviceinfo.IsCloud())
-                {
-                    StartCloudRequest(m_CloudRequestId);
-                }
-
                 // Start the asynchronous request.
                 m_httprequestdata.autoreseteventHttpWebRequest = new AutoResetEvent(false);
 
                 IAsyncResult iasyncresult;
                 if (m_dnssddeviceinfo.IsCloud())
                 {
+                    var completionSource = new TaskCompletionSource<string>();
+                    bool bGet = ApiCmd.OutstandingCloudRequests.TryAdd(m_CloudRequestId, completionSource);
+
                     iasyncresult = (IAsyncResult)m_httprequestdata.httpwebrequest.BeginGetResponse(ResponseCallBackLaunchpad, this);
                 }
                 else

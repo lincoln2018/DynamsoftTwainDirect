@@ -29,6 +29,10 @@ namespace Dynamsoft.TwainDirect.Cloud.Application
             _client = client;
         }
 
+        ~ApplicationManager()
+        {
+
+        }
         #endregion
 
         #region Public Methods

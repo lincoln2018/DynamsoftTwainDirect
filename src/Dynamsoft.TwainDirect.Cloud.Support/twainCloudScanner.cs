@@ -6,6 +6,7 @@ using Dynamsoft.TwainDirect.Cloud.Client;
 using System.IO;
 using System;
 using Dynamsoft.TwainDirect.Cloud.Support.Dnssd;
+using System.Threading;
 
 namespace Dynamsoft.TwainDirect.Cloud.Support
 {
@@ -43,15 +44,21 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// <returns></returns>
         public async Task ConnectToCloud(TwainCloudClient client)
         {
-            m_client = client;
-            m_applicationmanager = new ApplicationManager(client);
-            m_applicationmanager.Received += (sender, e) =>
+            if (m_applicationmanager == null)
             {
-                Debug.WriteLine(e);
-                ApiCmd.CompleteCloudResponse(e);
-            };
+                m_client = client;
+                m_applicationmanager = new ApplicationManager(client);
+                
 
-            await m_applicationmanager.Connect();
+                m_applicationmanager.Received += (sender, e) =>
+                {
+                    //new Thread(_ => {
+                        ApiCmd.CompleteCloudResponse(e);
+                    //}).Start();
+                };
+
+                await m_applicationmanager.Connect();
+            }
         }
 
         public TwainCloudClient GetCloudClient()
@@ -193,6 +200,10 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             bool blCreatedTwainLocalSession = false;
             string szFunction = "ClientScannerCreateSession";
 
+            if (!isCloudValid()) {
+                return ret;
+            }
+            
             // Lock this command to protect the session object...
             lock (m_objectLockClientApi)
             {
@@ -952,6 +963,6 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
     public class CloudResponse
     {
         public string HttpResponse;
-        public bool blSuccess;
+        public bool blSuccess = false;
     }
 }

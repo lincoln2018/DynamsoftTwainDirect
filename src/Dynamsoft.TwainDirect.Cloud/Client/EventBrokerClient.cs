@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dynamsoft.TwainDirect.Cloud.Events;
+using System.Diagnostics;
 
 namespace Dynamsoft.TwainDirect.Cloud.Client
 {
     public abstract class EventBrokerClient: IDisposable
     {
-        private MqttClient _mqttClient;
+        private MqttEventClient _mqttClient;
 
         #region Events
 
@@ -19,9 +20,12 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
 
         public async Task Connect(string url, bool bClient)
         {
-            _mqttClient = new MqttClient(url, bClient);
+            _mqttClient = new MqttEventClient(url, bClient);
             _mqttClient.MessageReceived += (_, message) => {
-                OnReceived(message.Message);
+                if (_mqttClient.IsConnected)
+                {
+                    OnReceived(message.Message);
+                }
             };
 
             await _mqttClient.Connect();
@@ -29,7 +33,24 @@ namespace Dynamsoft.TwainDirect.Cloud.Client
 
         public void Dispose()
         {
+            this.RemoveEvents(this.Received);
+
             _mqttClient?.Dispose();
+        }
+
+        private void RemoveEvents<T>(EventHandler<T> evts)
+        {
+            Debug.WriteLine("RemoveEvents in EventBrokerClient [Mqtt]");
+            if (evts == null)
+                return;
+
+            var list = evts.GetInvocationList();
+            foreach (var d in list)
+            {
+                object delObj = d.GetType().GetProperty("Method").GetValue(d, null);
+                string funcName = (string)delObj.GetType().GetProperty("Name").GetValue(delObj, null);
+                evts -= d as EventHandler<T>;
+            }
         }
 
         /// <summary>

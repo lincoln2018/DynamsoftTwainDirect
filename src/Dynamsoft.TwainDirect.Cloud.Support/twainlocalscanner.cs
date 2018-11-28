@@ -3936,7 +3936,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             m_objectEventCallback = a_objectEventCallback;
 
             // Init our command timeout for HTTPS communication...
-            iDefault = 30000; // 30 seconds
+            iDefault = 10000; // 10 seconds
             m_iHttpTimeoutCommand = (int)Config.Get("httpTimeoutCommand", iDefault);
             if (m_iHttpTimeoutCommand < 5000)
             {

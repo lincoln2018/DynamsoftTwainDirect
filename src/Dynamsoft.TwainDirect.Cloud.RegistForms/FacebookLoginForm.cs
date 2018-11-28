@@ -44,20 +44,32 @@ namespace Dynamsoft.TwainDirect.Cloud.RegistForms
         /// <summary>
         /// Occurs when TWAIN Cloud successfully authorized the user and issued access tokens.
         /// </summary>
-        public event EventHandler<TwainCloudAuthorizedEventArgs> Authorized; 
+        public event EventHandler<TwainCloudAuthorizedEventArgs> Authorized;
 
         private void webBrowser_Navigated(object sender, WebBrowserNavigatedEventArgs e)
         {
-            Debug.WriteLine(e.Url.ToString());
+            string url = e.Url.ToString();
+            Debug.WriteLine(url);
 
-            var queryParams = HttpUtility.ParseQueryString(e.Url.Query);
-            var authToken = queryParams[AuthorizationTokenName];
-            var refreshToken = queryParams[RefreshTokenName];
+            if (url.StartsWith("http://52.199.8.228/")) {
 
-            // There will be several redirects when new user accesses the app.
-            // Make sure we fire Authorized event only when we have both token successfully extracted.
-            if (!string.IsNullOrEmpty(authToken) && !string.IsNullOrEmpty(refreshToken))
-                OnAuthorized(new TwainCloudAuthorizedEventArgs(new TwainCloudTokens(authToken, refreshToken)));
+                var queryParams = HttpUtility.ParseQueryString(e.Url.Query);
+                var authToken = queryParams[AuthorizationTokenName];
+                var refreshToken = queryParams[RefreshTokenName];
+
+                // There will be several redirects when new user accesses the app.
+                // Make sure we fire Authorized event only when we have both token successfully extracted.
+                if (!string.IsNullOrEmpty(authToken) && !string.IsNullOrEmpty(refreshToken))
+                {
+                    webBrowser.Document.Write("Loading...");
+                    OnAuthorized(new TwainCloudAuthorizedEventArgs(new TwainCloudTokens(authToken, refreshToken)));
+                }
+                else
+                {
+                    webBrowser.Document.Write("Authorization token is invalid.");
+
+                }
+            }
         }
 
         protected virtual void OnAuthorized(TwainCloudAuthorizedEventArgs e)

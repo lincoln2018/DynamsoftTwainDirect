@@ -90,19 +90,11 @@ namespace TwainDirect.Client
 
             // Load the list box...
             Thread.Sleep(1000);
-            a_blFoundOne = LoadScannerNames(false);
 
             // Put the focus on the select box...
             ActiveControl = m_listviewSelect;
 
-            // Start our timer...
-            m_timerLoadScannerNames = new System.Windows.Forms.Timer();
-            m_timerLoadScannerNames.Tick += new EventHandler(TimerEventProcessor);
-            m_timerLoadScannerNames.Interval = 15000;
-            m_timerLoadScannerNames.Tag = this;
-            m_timerLoadScannerNames.Start();
-
-            a_blFoundOne |= LoadCloudScanners(a_cloudClient);
+            a_blFoundOne = LoadCloudScanners(a_cloudClient);
         }
 
         private bool LoadCloudScanners(TwainCloudClient a_cloudClient)
@@ -307,25 +299,12 @@ namespace TwainDirect.Client
         }
 
         /// <summary>
-        /// See if we have a change in our device list...
-        /// </summary>
-        /// <param name="myObject"></param>
-        /// <param name="myEventArgs"></param>
-        private void TimerEventProcessor(Object a_object, EventArgs a_eventargs)
-        {
-            System.Windows.Forms.Timer timer = (System.Windows.Forms.Timer)a_object;
-            FormSelect formselect = (FormSelect)timer.Tag;
-            formselect.LoadScannerNames(true);
-        }
-
-        /// <summary>
         /// Select this as our driver and close the dialog...
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void m_buttonOpen_Click(object sender, EventArgs e)
         {
-            m_timerLoadScannerNames.Stop();
             this.DialogResult = DialogResult.OK;
         }
 
@@ -336,7 +315,6 @@ namespace TwainDirect.Client
         /// <param name="e"></param>
         private void m_listviewSelect_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            m_timerLoadScannerNames.Stop();
             this.DialogResult = DialogResult.OK;
         }
 
@@ -393,7 +371,6 @@ namespace TwainDirect.Client
         /// <param name="e"></param>
         private void m_listboxSelect_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            m_timerLoadScannerNames.Stop();
             this.DialogResult = DialogResult.OK;
         }
 
@@ -453,7 +430,6 @@ namespace TwainDirect.Client
         ///////////////////////////////////////////////////////////////////////////////
         #region Private Attributes...
 
-        private System.Windows.Forms.Timer m_timerLoadScannerNames;
         private DnssdDeviceInfo m_dnssddeviceinfoSelected;
         private DnssdDeviceInfo[] m_adnssddeviceinfoCompare;
         private ResourceManager m_resourcemanager;

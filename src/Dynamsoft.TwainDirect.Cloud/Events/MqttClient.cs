@@ -14,13 +14,13 @@ namespace Dynamsoft.TwainDirect.Cloud.Events
     /// TWAIN Cloud MQTT client.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    internal class MqttClient : IDisposable
+    internal class MqttEventClient : IDisposable
     {
         #region Private Fields
-        private static Logger Logger = Logger.GetLogger<MqttClient>();
+        private static Logger Logger = Logger.GetLogger<MqttEventClient>();
         private static readonly Encoding DefaultMessageEncoding = Encoding.UTF8;
 
-        private int _reconnectMaxTime = 3;
+        private int _reconnectMaxTime = 1;
         protected bool _connected = false;
         private readonly IMqttClient _client;
         private readonly IMqttClientOptions _options;
@@ -30,17 +30,17 @@ namespace Dynamsoft.TwainDirect.Cloud.Events
         #region Ctors
 
         /// <summary>
-        /// Initializes the <see cref="MqttClient"/> class.
+        /// Initializes the <see cref="MqttEventClient"/> class.
         /// </summary>
-        static MqttClient()
+        static MqttEventClient()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MqttClient"/> class.
+        /// Initializes a new instance of the <see cref="MqttEventClient"/> class.
         /// </summary>
         /// <param name="url">The MQTT broker URL.</param>
-        public MqttClient(string mqttUrl, bool bClient)
+        public MqttEventClient(string mqttUrl, bool bClient)
         {
             // Create a new MQTT client.
             var factory = new MqttFactory();
@@ -87,7 +87,9 @@ namespace Dynamsoft.TwainDirect.Cloud.Events
         /// </summary>
         public async void Dispose()
         {
+            this.RemoveEvents(this.MessageReceived);
             await _client.DisconnectAsync();
+
         }
 
         public bool IsConnected { get { return this._connected; } }
@@ -114,8 +116,8 @@ namespace Dynamsoft.TwainDirect.Cloud.Events
                     else
                     {
                         this._connected = false;
-                        Debug.WriteLine("### RECONNECTING MORE THAN 3 TIMES, EXIT ###");
-                        Logger.LogDebug("Reconnection more than 3 times, exit.");
+                        Debug.WriteLine("### RECONNECTING MORE THAN 1 TIMES, EXIT ###");
+                        Logger.LogDebug("Reconnection more than 1 times, exit.");
                     }
                 }
                 catch
@@ -185,6 +187,22 @@ namespace Dynamsoft.TwainDirect.Cloud.Events
         #endregion
 
         #region Protected Methods
+        private void RemoveEvents<T>(EventHandler<T> evts)
+        {
+
+            Debug.WriteLine("RemoveEvents in MqttEventClient [Mqtt]");
+
+            if (evts == null)
+                return;
+
+            var list = evts.GetInvocationList();
+            foreach (var d in list)
+            {
+                object delObj = d.GetType().GetProperty("Method").GetValue(d, null);
+                string funcName = (string)delObj.GetType().GetProperty("Name").GetValue(delObj, null);
+                evts -= d as EventHandler<T>;
+            }
+        }
 
         /// <summary>
         /// Raises the <see cref="MessageReceived" /> event.

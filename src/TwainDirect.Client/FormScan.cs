@@ -41,6 +41,8 @@ using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Threading;
+using System.Threading.Tasks;
+
 using System.Windows.Forms;
 using Dynamsoft.TwainDirect.Cloud.Client;
 using Dynamsoft.TwainDirect.Cloud.Support.Dnssd;
@@ -2145,9 +2147,6 @@ namespace TwainDirect.Client
         {
             ApiCmd apicmd = null;
 
-            // Create a command context...
-            apicmd = new ApiCmd(m_dnssddeviceinfo);
-
             // We need this to get the x-privet-token...
             CloudResponse ret = m_twainCloudScannerClient.ClientInfo(m_dnssddeviceinfo, out apicmd);
             if (!ret.blSuccess)
@@ -2159,8 +2158,7 @@ namespace TwainDirect.Client
             }
 
             // Create session...
-            apicmd = new ApiCmd(m_dnssddeviceinfo);
-
+            apicmd = null;
             ret = m_twainCloudScannerClient.ClientScannerCreateSession(m_dnssddeviceinfo, out apicmd);
             if (!ret.blSuccess)
             {
@@ -2189,7 +2187,7 @@ namespace TwainDirect.Client
             }
 
             // Create a new command context...
-            apicmd = new ApiCmd(m_dnssddeviceinfo);
+            apicmd = null;
 
             // Wait for events...
             ret = m_twainCloudScannerClient.ClientScannerWaitForEvents(m_dnssddeviceinfo, out apicmd);
@@ -2418,10 +2416,10 @@ namespace TwainDirect.Client
             var loginUrl = $"{apiRoot}/authentication/signin/" + loginProvider;
 
             var loginForm = new FacebookLoginForm(loginUrl);
+            var main = this;
+
             loginForm.Authorized += async (_, args) =>
             {
-                loginForm.Close();
-
                 var _cloudClient = new TwainCloudClient(apiRoot, args.Tokens);
 
                 for (int i = 0; i < 3; i++) {
@@ -2430,7 +2428,7 @@ namespace TwainDirect.Client
                     {
                         await m_twainCloudScannerClient.ConnectToCloud(_cloudClient);
                         m_twainCloudScannerClient.SetToken(args.Tokens.AuthorizationToken);
-
+                        main.SetButtons(EBUTTONSTATE.CLOSED);
                         break;
                     }
                     catch (Exception e3)
@@ -2440,8 +2438,9 @@ namespace TwainDirect.Client
                         Thread.Sleep(1000);
                     }
                 }
-            };
 
+                loginForm.Close();
+            };
             loginForm.ShowDialog(this);
         }
     }
