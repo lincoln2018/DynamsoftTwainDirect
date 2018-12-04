@@ -94,7 +94,7 @@ namespace TwainDirect.OnTwain
 
             // Turn on logging...
             TWAINWorkingGroup.Log.Open(szExecutableName, szWriteFolder, 1);
-            TWAINWorkingGroup.Log.SetLevel((int)Config.Get("logLevel", 0));
+            TWAINWorkingGroup.Log.SetLevel((int)Config.Get("logLevel", 1));
             TWAINWorkingGroup.Log.Info(szExecutableName + " Log Started...");
 
             // Let the manager figure out which mode we're in: batch or

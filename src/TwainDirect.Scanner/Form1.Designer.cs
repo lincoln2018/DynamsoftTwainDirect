@@ -42,7 +42,6 @@
             this.m_buttonStop = new System.Windows.Forms.Button();
             this.m_richtextboxTask = new System.Windows.Forms.RichTextBox();
             this.m_buttonRegister = new System.Windows.Forms.Button();
-            this.m_notifyicon = new System.Windows.Forms.NotifyIcon(this.components);
             this.m_CloudRegisterButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -90,14 +89,6 @@
             this.m_buttonRegister.UseVisualStyleBackColor = true;
             this.m_buttonRegister.Click += new System.EventHandler(this.m_buttonRegister_Click);
             // 
-            // m_notifyicon
-            // 
-            this.m_notifyicon.BalloonTipText = "TWAIN Direct on TWAIN Bridge";
-            this.m_notifyicon.BalloonTipTitle = "TWAIN Direct";
-            this.m_notifyicon.Icon = ((System.Drawing.Icon)(resources.GetObject("m_notifyicon.Icon")));
-            this.m_notifyicon.Text = "TWAIN Direct";
-            this.m_notifyicon.Visible = true;
-            // 
             // m_CloudRegisterButton
             // 
             this.m_CloudRegisterButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -119,7 +110,6 @@
             this.Controls.Add(this.m_CloudRegisterButton);
             this.Controls.Add(this.m_buttonStop);
             this.Controls.Add(this.m_buttonStart);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(383, 274);
             this.Name = "Form1";
             this.Text = "TWAIN Direct Cloud Scanner";
@@ -133,7 +123,6 @@
         private System.Windows.Forms.Button m_buttonStop;
         private System.Windows.Forms.RichTextBox m_richtextboxTask;
         private System.Windows.Forms.Button m_buttonRegister;
-        private System.Windows.Forms.NotifyIcon m_notifyicon;
         private System.Windows.Forms.Button m_CloudRegisterButton;
     }
 }

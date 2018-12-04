@@ -50,7 +50,7 @@ namespace TwainDirect.Scanner
 
             // Turn on logging...
             Log.Open(szExecutableName, szWriteFolder, 1);
-            Log.SetLevel((int)Config.Get("logLevel", 0));
+            Log.SetLevel((int)Config.Get("logLevel", 1));
             Log.Info(szExecutableName + " Log Started...");
 
             // Make sure that any stale TwainDirectOnTwain processes are gone...

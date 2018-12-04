@@ -75,7 +75,7 @@ namespace TwainDirect.Client
 
             // Turn on logging...
             Log.Open(szExecutableName, szWriteFolder, 1);
-            Log.SetLevel((int)Config.Get("logLevel", 0));
+            Log.SetLevel((int)Config.Get("logLevel", 1));
             Log.Info(szExecutableName + " Log Started...");
 
             // Localize, the user can override the system default...

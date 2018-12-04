@@ -82,9 +82,6 @@ namespace TwainDirect.OnTwain
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            // Double click...
-            m_listviewTasks.MouseDoubleClick += new MouseEventHandler(m_listviewTasks_MouseDoubleClick);
-
             // Populate the listview with tasks...
             try
             {
@@ -133,26 +130,6 @@ namespace TwainDirect.OnTwain
         }
  
         /// <summary>
-        /// A double-click is like pressing the Scan button...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void m_listviewTasks_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            m_buttonRun_Click(sender, e);
-        }
-
-        /// <summary>
-        /// Run a task...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void m_buttonRun_Click(object sender, EventArgs e)
-        {
-            // Removed...
-        }
-
-        /// <summary>
         /// Cancel a scanning session...
         /// </summary>
         /// <param name="sender"></param>
@@ -189,27 +166,8 @@ namespace TwainDirect.OnTwain
                 }
             }
         }
-
-        /// <summary>
-        /// Let the user edit a task...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void m_buttonEdit_Click(object sender, EventArgs e)
-        {
-            // Removed...
-        }
-
-        /// <summary>
-        /// Let the user pick a TWAIN driver (this is Windows only, we'll need our
-        /// own dialog box to support Linux and Mac OS X)...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void m_buttonSelect_Click(object sender, EventArgs e)
-        {
-            // Removed...
-        }
+        
+        
 
         /// <summary>
         /// Manage our buttons in one place to reduce insanity...
@@ -221,39 +179,16 @@ namespace TwainDirect.OnTwain
             {
                 default:
                 case ButtonMode.Disabled:
-                    m_buttonSelect.Enabled = false;
-                    m_buttonEdit.Enabled = false;
-                    m_buttonScan.Enabled = false;
-                    m_buttonCancel.Enabled = false;
-                    m_buttonScan.Visible = true;
                     AcceptButton = null;
                     break;
 
                 case ButtonMode.Ready:
-                    m_buttonSelect.Enabled = true;
-                    m_buttonEdit.Enabled = true;
-                    m_buttonScan.Enabled = true;
-                    m_buttonCancel.Enabled = false;
-                    m_buttonScan.Visible = true;
-                    AcceptButton = m_buttonScan;
                     break;
 
                 case ButtonMode.Scanning:
-                    m_buttonSelect.Enabled = false;
-                    m_buttonEdit.Enabled = false;
-                    m_buttonScan.Enabled = false;
-                    m_buttonCancel.Enabled = true;
-                    m_buttonScan.Visible = false;
-                    AcceptButton = m_buttonCancel;
                     break;
 
                 case ButtonMode.Canceled:
-                    m_buttonSelect.Enabled = false;
-                    m_buttonEdit.Enabled = false;
-                    m_buttonScan.Enabled = false;
-                    m_buttonCancel.Enabled = false;
-                    m_buttonScan.Visible = false;
-                    AcceptButton = m_buttonCancel;
                     break;
             }
 

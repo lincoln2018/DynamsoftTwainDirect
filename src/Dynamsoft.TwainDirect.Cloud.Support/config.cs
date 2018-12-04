@@ -111,7 +111,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
             // default...
             if ((a_szKey == "pfxFile") && string.IsNullOrEmpty(a_szDefault))
             {
-                return (Path.Combine(Path.Combine(ms_szReadFolder, "data"), "certificate.p12"));
+                return (Path.Combine(Path.Combine(ms_szReadFolder, "data"), "dynamsoft.pfx"));
             }
 
             // All done...

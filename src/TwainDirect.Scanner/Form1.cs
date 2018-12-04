@@ -81,23 +81,6 @@ namespace TwainDirect.Scanner
             m_buttonStart.Text = Config.GetResource(m_resourcemanager, "strButtonStart"); // Start
             m_buttonStop.Text = Config.GetResource(m_resourcemanager, "strButtonStop"); // Stop
 
-            // Context memory for the system tray...
-            MenuItem menuitemOpen = new MenuItem(Config.GetResource(m_resourcemanager, "strMenuShowConsole")); // Open...
-            //MenuItem menuitemAbout = new MenuItem(Config.GetResource(m_resourcemanager, "strMenuAbout")); // About...
-            MenuItem menuitemExit = new MenuItem(Config.GetResource(m_resourcemanager, "strMenuExit")); // Exit...
-            menuitemOpen.Click += MenuitemOpen_Click;
-            //menuitemAbout.Click += MenuitemAbout_Click;
-            menuitemExit.Click += MenuitemExit_Click; ;
-            m_notifyicon.ContextMenu = new ContextMenu();
-            m_notifyicon.ContextMenu.MenuItems.Add(menuitemOpen);
-            m_notifyicon.ContextMenu.MenuItems.Add("-");
-            //m_notifyicon.ContextMenu.MenuItems.Add(menuitemAbout);
-            //m_notifyicon.ContextMenu.MenuItems.Add("-");
-            m_notifyicon.ContextMenu.MenuItems.Add(menuitemExit);
-            m_notifyicon.DoubleClick += m_notifyicon_DoubleClick;
-
-            // Handle resizing...
-            this.Resize += Form1_Resize;
 
             // Handle scaling...
             float fScale = (float)Config.Get("scale", 1.0);
@@ -158,30 +141,6 @@ namespace TwainDirect.Scanner
         // Private Methods...
         ///////////////////////////////////////////////////////////////////////////////
         #region Private Methods...
-
-        /// <summary>
-        /// Hide the task bar icon when we're minimized...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                this.Hide();
-            }
-        }
-
-        /// <summary>
-        /// Open the 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void m_notifyicon_DoubleClick(object sender, EventArgs e)
-        {
-            MenuitemOpen_Click(null, null);
-        }
-
         /// <summary>
         /// Tell the user about this program...
         /// </summary>
@@ -191,39 +150,6 @@ namespace TwainDirect.Scanner
         {
             AboutBox aboutbox = new AboutBox(m_resourcemanager);
             aboutbox.ShowDialog();
-        }
-
-        /// <summary>
-        /// Shutdown the TWAIN Direct on TWAIN Bridge...
-        /// </summary>
-        private bool m_blAllowFormToClose;
-        private void MenuitemExit_Click(object sender, EventArgs e)
-        {
-            // Do you want to close the 'TWAIN Direct on TWAIN Bridge' program?
-            //DialogResult dialogresult = MessageBox.Show
-            //(
-            //    Config.GetResource(m_resourcemanager, "errCloseTwainBridge"),
-            //    Config.GetResource(m_resourcemanager, "strFormMainTitle"),
-            //    MessageBoxButtons.YesNo
-            //);
-            //if (dialogresult == DialogResult.Yes)
-            {
-                m_blAllowFormToClose = true;
-                Application.Exit();
-            }
-        }
-
-        /// <summary>
-        /// Display the form on the user's desktop...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MenuitemOpen_Click(object sender, EventArgs e)
-        {
-            this.Show();
-            this.WindowState = FormWindowState.Normal;
-            this.Update();
-            this.Show();
         }
 
         /// <summary>
@@ -368,6 +294,8 @@ namespace TwainDirect.Scanner
         /// <param name="a_szMsg">the thing to display</param>
         private void Display(string a_szMsg)
         {
+            Log.Info("Display: ==> " + a_szMsg);
+
             // Let us be called from any thread...
             if (this.InvokeRequired)
             {
@@ -401,20 +329,16 @@ namespace TwainDirect.Scanner
         /// <param name="e"></param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Reeeeeeeeejected!
-            if (!m_blAllowFormToClose && (e.CloseReason == CloseReason.UserClosing))
-            {
-                //MessageBox.Show(Config.GetResource(m_resourcemanager, "strTextNotClosing"), Config.GetResource(m_resourcemanager, "strFormMainTitle"));
-                e.Cancel = true;
-                WindowState = FormWindowState.Minimized;
-                this.Hide();
-            }
+            Log.Info("Scanner Closing... ");
 
-            // Okay, fine...
             if (m_scanner != null)
             {
+
+                Log.Info("MonitorTasksStop... ");
                 m_scanner.MonitorTasksStop(e.CloseReason == CloseReason.UserClosing);
             }
+
+            Log.Info("Scanner Closed. ");
         }
 
         /// <summary>
@@ -432,6 +356,8 @@ namespace TwainDirect.Scanner
             JsonLookup jsonlookup;
             ApiCmd apicmd;
             DialogResult dialogresult;
+
+            Log.Info("Button Register Clicked");
 
             // Are you sure?
             // Do you want to register a TWAIN driver?  If so, please make sure your scanner is powered on and connected, and press YES.
@@ -663,20 +589,26 @@ namespace TwainDirect.Scanner
             SetButtons(ButtonState.Undefined);
 
             // Is PDF/raster happy and healthy?
-            PdfRaster pdfraster = new PdfRaster();
-            if (!pdfraster.HealthCheck())
+            try
             {
-                DialogResult dialogresult = MessageBox.Show
-                (
-                    "We need to install the Visual Studio 2017 Redistributables for PDF/raster.  May we continue?",
-                    "Warning",
-                    MessageBoxButtons.YesNo
-                );
-                if (dialogresult == DialogResult.Yes)
+                PdfRaster pdfraster = new PdfRaster();
+                if (!pdfraster.HealthCheck())
                 {
-                    pdfraster.InstallVisualStudioRedistributables();
+                    DialogResult dialogresult = MessageBox.Show
+                    (
+                        "We need to install the Visual Studio 2015 Redistributables for PDF/raster.  May we continue?",
+                        "Warning",
+                        MessageBoxButtons.YesNo
+                    );
+                    if (dialogresult == DialogResult.Yes)
+                    {
+                        pdfraster.InstallVisualStudioRedistributables();
+                    }
                 }
+            } catch (Exception e1) {
+                Log.Error(e1.Message);
             }
+            
 
             // Start polling...
             Display("");

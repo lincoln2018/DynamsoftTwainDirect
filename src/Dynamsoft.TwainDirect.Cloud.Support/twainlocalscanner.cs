@@ -3323,7 +3323,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// <summary>
         /// Cleanup...
         /// </summary>
-        protected sealed override void Dispose(bool a_blDisposing)
+        protected override void Dispose(bool a_blDisposing)
         {
             // Cleanup the timeout event...
             if (m_timerEvent != null)
@@ -4639,7 +4639,7 @@ namespace Dynamsoft.TwainDirect.Cloud.Support
         /// <summary>
         /// Cleanup...
         /// </summary>
-        protected sealed override void Dispose(bool a_blDisposing)
+        protected override void Dispose(bool a_blDisposing)
         {
             // Stop waiting for events...
             if (m_waitforeventsinfo != null)
